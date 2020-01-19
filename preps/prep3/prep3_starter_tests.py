@@ -30,21 +30,32 @@ from hypothesis import given
 from hypothesis.strategies import integers, floats
 from prep3 import SalariedEmployee, HourlyEmployee, Company
 
-
-# TODO: Implement *at least* 2 more test cases to test your code.
-#       These test cases must be in their own functions, and their
-#       names must start with "test_".
-#       These test cases must pass on a working version of
-#       the prep3 code (SalariedEmployee, HourlyEmployee, Company).
-#       There are no other requirements for the test cases.
-
-
 # === Sample test cases below ===
 # Use the below test cases as an example for writing your own test cases,
 # and as a start to testing your prep3.py code.
 
 # WARNING: THIS IS CURRENTLY AN EXTREMELY INCOMPLETE SET OF TESTS!
 # We will test your code on a much more thorough set of tests!
+@given(salary=floats(min_value=1))
+def test_random_total_pay_salary_employee(salary: float) -> None:
+    e = SalariedEmployee(13, 'William the human', salary)
+    e.pay(date(2018, 6, 28))
+    e.pay(date(2018, 7, 28))
+    e.pay(date(2018, 8, 28))
+    assert e.total_pay() == round(salary / 12, 2) * 3
+
+
+@given(hourly_wage=floats(min_value=1), hours_per_month=integers(min_value=1))
+def test_random_total_pay_hourly_employee(
+        hourly_wage: float,
+        hours_per_month: int) -> None:
+    e = HourlyEmployee(15, 'Kexin the dog', hourly_wage, hours_per_month)
+    e.pay(date(2018, 6, 28))
+    e.pay(date(2018, 7, 28))
+    e.pay(date(2018, 8, 28))
+    assert e.total_pay() == round(hours_per_month * hourly_wage, 2) * 3
+
+
 def test_total_pay_basic() -> None:
     e = SalariedEmployee(14, 'Gilbert the cat', 1200.0)
     e.pay(date(2018, 6, 28))
