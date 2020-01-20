@@ -18,7 +18,6 @@ Sophia Huynh and Jaisie Sin
 from datetime import datetime
 from typing import Dict, List, TextIO, Tuple
 
-
 # The additional pay per hour instructors receive for each certificate they
 # hold.
 BONUS_RATE = 1.50
@@ -195,6 +194,7 @@ class Gym:
     _rooms: Dict[str, int]
     _schedule: Dict[datetime,
                     Dict[str, Tuple[Instructor, WorkoutClass, List[str]]]]
+    _clients: List[str]
 
     def __init__(self, gym_name: str) -> None:
         """Initialize a new Gym with <name> that has no instructors, workout
@@ -209,7 +209,7 @@ class Gym:
         self._workouts = {}
         self._rooms = {}
         self._schedule = {}
-        self._client = []
+        self._clients = []
 
     def add_instructor(self, instructor: Instructor) -> bool:
         """Add a new <instructor> to this Gym's roster iff the <instructor>
@@ -225,6 +225,7 @@ class Gym:
         if instructor not in self._instructors:
             self._instructors[instructor.get_id()] = instructor
             return True
+        return False
 
     def add_workout_class(self, workout_class: WorkoutClass) -> bool:
         """Add a <workout_class> to this Gym iff the <workout_class> has not
@@ -240,6 +241,7 @@ class Gym:
         if workout_class not in self._workouts:
             self._workouts[workout_class.get_name()] = workout_class
             return True
+        return False
 
     def add_room(self, name: str, capacity: int) -> bool:
         """Add a room with a <name> and <capacity> to this Gym iff the room
@@ -254,6 +256,7 @@ class Gym:
         if name not in self._rooms:
             self._rooms[name] = capacity
             return True
+        return False
 
     def schedule_workout_class(self, time_point: datetime, room_name: str,
                                workout_name: str, instr_id: int) -> bool:
@@ -293,15 +296,16 @@ class Gym:
         """
         if time_point not in self._schedule:
             if room_name not in self._schedule[time_point]:
-                if workout_name not in self._schedule[time_point][room_name][
-                    0] and instr_id not in \
-                        self._schedule[time_point][room_name][1]:
+                if workout_name not in self._schedule[time_point][room_name][1] \
+                        and instr_id not in \
+                        self._schedule[time_point][room_name][0]:
                     self._schedule[time_point] = {
                         room_name: (
                             self._instructors[instr_id],
                             self._workouts[workout_name],
-                            self._client)}
+                            self._clients)}
                     return True
+        return False
 
     def register(self, time_point: datetime, client: str, workout_name: str) \
             -> bool:
@@ -339,8 +343,16 @@ class Gym:
         >>> ac.register(sep_9_2019_12_00, 'Philip', 'Boot Camp')
         False
         """
-        # TODO: implement this method!
-        pass
+        room_name = ''
+        for room, value in self._schedule[time_point]:
+            if workout_name in value:
+                room_name = room
+        if client not in self._schedule[time_point][room_name][2] and len(
+                self._schedule[time_point][room_name][2]) < \
+                self._rooms[room_name]:
+            self._schedule[time_point][room_name][2].append(client)
+            return True
+        return False
 
     def offerings_at(self, time_point: datetime) -> List[Tuple[str, str, str]]:
         """Return all the offerings that start at <time_point>.
@@ -369,8 +381,13 @@ class Gym:
         >>> ('Diane', 'Boot Camp', 'Dance Studio') in ac.offerings_at(t1)
         True
         """
-        # TODO: implement this method!
-        pass
+        lst = []
+        for rooms in self._schedule[time_point]:
+            for room in rooms:
+                instructor = self._schedule[time_point][room][0].name
+                workout = self._schedule[time_point][room][1].get_name()
+                lst.append((room, instructor, workout))
+        return lst
 
     def instructor_hours(self, time1: datetime, time2: datetime) -> \
             Dict[int, int]:
