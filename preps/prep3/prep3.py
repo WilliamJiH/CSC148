@@ -31,9 +31,11 @@ class Employee:
     === Public attributes ===
     id_: This employee's ID number.
     name: This employee's name.
+    _paid: Accumulate the amount of salary that paid.
     """
     id_: int
     name: str
+    _paid: float
 
     def __init__(self, id_: int, name: str) -> None:
         """Initialize this employee.
@@ -43,6 +45,7 @@ class Employee:
         """
         self.id_ = id_
         self.name = name
+        self._paid = 0.0
 
     def get_monthly_payment(self) -> float:
         """Return the amount that this Employee should be paid in one month.
@@ -57,6 +60,7 @@ class Employee:
         (Assume this is called once per month.)
         """
         payment = self.get_monthly_payment()
+        self._paid += payment
         print(f'An employee was paid {payment} on {pay_date}.')
 
     def total_pay(self) -> float:
@@ -73,8 +77,7 @@ class Employee:
         300.0
         """
         # TODO: implement this method!
-        raise NotImplementedError
-
+        return self._paid
 
 
 class SalariedEmployee(Employee):
@@ -115,23 +118,6 @@ class SalariedEmployee(Employee):
         10000.0
         """
         return round(self.salary / 12, 2)
-
-    def total_pay(self) -> float:
-        """Return the total amount of pay this Employee has received.
-
-        >>> e = SalariedEmployee(14, 'Gilbert the cat', 1200.0)
-        >>> e.pay(date(2018, 6, 28))
-        An employee was paid 100.0 on 2018-06-28.
-        >>> e.pay(date(2018, 7, 28))
-        An employee was paid 100.0 on 2018-07-28.
-        >>> e.pay(date(2018, 8, 28))
-        An employee was paid 100.0 on 2018-08-28.
-        >>> e.total_pay()
-        300.0
-        """
-        total_payment = 0
-        payment = SalariedEmployee.get_monthly_payment()
-        return payment
 
 
 class HourlyEmployee(Employee):
@@ -179,21 +165,6 @@ class HourlyEmployee(Employee):
         """
         return round(self.hours_per_month * self.hourly_wage, 2)
 
-    def total_pay(self) -> float:
-        """Return the total amount of pay this Employee has received.
-
-        >>> e = HourlyEmployee(14, 'Gilbert the cat', 100, 10)
-        >>> e.pay(date(2018, 6, 28))
-        An employee was paid 100.0 on 2018-06-28.
-        >>> e.pay(date(2018, 7, 28))
-        An employee was paid 100.0 on 2018-07-28.
-        >>> e.pay(date(2018, 8, 28))
-        An employee was paid 100.0 on 2018-08-28.
-        >>> e.total_pay()
-        300.0
-        """
-        return self.hourly_wage * self.hours_per_month
-
 
 class Company:
     """A company with employees.
@@ -226,8 +197,10 @@ class Company:
         >>> my_corp.total_payroll()
         600.25
         """
-        # TODO: implement this method!
-        pass
+        paid = 0.0
+        for employee in self.employees:
+            paid += employee.total_pay()
+        return paid
 
 
 if __name__ == '__main__':

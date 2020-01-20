@@ -19,6 +19,11 @@ from datetime import datetime
 from typing import Dict, List, TextIO, Tuple
 
 
+# The additional pay per hour instructors receive for each certificate they
+# hold.
+BONUS_RATE = 1.50
+
+
 class WorkoutClass:
     """A workout class that can be offered at a gym.
 
