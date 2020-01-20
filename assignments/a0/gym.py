@@ -87,8 +87,9 @@ class Instructor:
         >>> instructor.name
         'Matylda'
         """
-        # TODO: implement this method!
-        pass
+        self._id = instructor_id
+        self.name = instructor_name
+        self._certificates = []
 
     def get_id(self) -> int:
         """Return the id of this Instructor.
@@ -97,8 +98,7 @@ class Instructor:
         >>> instructor.get_id()
         1
         """
-        # TODO: implement this method!
-        pass
+        return self._id
 
     def add_certificate(self, certificate: str) -> bool:
         """Add the <certificate> to this instructor's list of certificates iff
@@ -112,8 +112,11 @@ class Instructor:
         >>> instructor.add_certificate('Strength Training')
         False
         """
-        # TODO: implement this method!
-        pass
+        if certificate not in self._certificates:
+            self._certificates.append(certificate)
+            return True
+        else:
+            return False
 
     def get_num_certificates(self) -> int:
         """Return the number of certificates held by this instructor.
@@ -124,8 +127,7 @@ class Instructor:
         >>> instructor.get_num_certificates()
         1
         """
-        # TODO: implement this method!
-        pass
+        return len(self._certificates)
 
     def can_teach(self, workout_class: WorkoutClass) -> bool:
         """Return True iff this instructor has all the required certificates to
@@ -140,8 +142,7 @@ class Instructor:
         >>> matylda.can_teach(kickboxing)
         True
         """
-        # TODO: implement this method!
-        pass
+        return workout_class in self._certificates
 
 
 class Gym:
@@ -203,6 +204,7 @@ class Gym:
         self._workouts = {}
         self._rooms = {}
         self._schedule = {}
+        self._client = []
 
     def add_instructor(self, instructor: Instructor) -> bool:
         """Add a new <instructor> to this Gym's roster iff the <instructor>
@@ -215,8 +217,9 @@ class Gym:
         >>> ac.add_instructor(diane)
         True
         """
-        # TODO: implement this method!
-        pass
+        if instructor not in self._instructors:
+            self._instructors[instructor.get_id()] = instructor
+            return True
 
     def add_workout_class(self, workout_class: WorkoutClass) -> bool:
         """Add a <workout_class> to this Gym iff the <workout_class> has not
@@ -229,8 +232,9 @@ class Gym:
         >>> ac.add_workout_class(kickboxing)
         True
         """
-        # TODO: implement this method!
-        pass
+        if workout_class not in self._workouts:
+            self._workouts[workout_class.get_name()] = workout_class
+            return True
 
     def add_room(self, name: str, capacity: int) -> bool:
         """Add a room with a <name> and <capacity> to this Gym iff the room
@@ -242,8 +246,9 @@ class Gym:
         >>> ac.add_room('Dance Studio', 50)
         True
         """
-        # TODO: implement this method!
-        pass
+        if name not in self._rooms:
+            self._rooms[name] = capacity
+            return True
 
     def schedule_workout_class(self, time_point: datetime, room_name: str,
                                workout_name: str, instr_id: int) -> bool:
@@ -281,8 +286,17 @@ class Gym:
         boot_camp.get_name(), diane.get_id())
         True
         """
-        # TODO: implement this method!
-        pass
+        if time_point not in self._schedule:
+            if room_name not in self._schedule[time_point]:
+                if workout_name not in self._schedule[time_point][room_name][
+                    0] and instr_id not in \
+                        self._schedule[time_point][room_name][1]:
+                    self._schedule[time_point] = {
+                        room_name: (
+                            self._instructors[instr_id],
+                            self._workouts[workout_name],
+                            self._client)}
+                    return True
 
     def register(self, time_point: datetime, client: str, workout_name: str) \
             -> bool:
@@ -592,6 +606,7 @@ def load_data(file_name: str, gym_name: str) -> Gym:
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-io': ['load_data'],
         'allowed-import-modules': ['doctest', 'python_ta', 'typing',
@@ -600,6 +615,7 @@ if __name__ == '__main__':
     })
 
     import doctest
+
     doctest.testmod()
 
     # Example: reading data about a Gym from a file.
