@@ -297,18 +297,26 @@ class Gym:
         boot_camp.get_name(), diane.get_id())
         True
         """
-        if time_point not in self._schedule:
-            if room_name not in self._schedule[time_point]:
-                if workout_name not in self._schedule[time_point][room_name][1]\
-                        and instr_id not in \
-                        self._schedule[time_point][room_name][0]:
-                    self._schedule[time_point] = {
-                        room_name: (
-                            self._instructors[instr_id],
-                            self._workouts[workout_name],
-                            self._clients)}
-                    return True
-        return False
+        if len(self._schedule) > 0:
+            if time_point not in self._schedule and room_name not in \
+                    self._schedule[time_point] and workout_name not in \
+                    self._schedule[time_point][room_name][1] and \
+                    instr_id not in \
+                    self._schedule[time_point][room_name][0]:
+                self._schedule[time_point] = {
+                    room_name: (
+                        self._instructors[instr_id],
+                        self._workouts[workout_name],
+                        self._clients)}
+                return True
+            return False
+        else:
+            self._schedule[time_point] = {
+                room_name: (
+                    self._instructors[instr_id],
+                    self._workouts[workout_name],
+                    self._clients)}
+            return True
 
     def register(self, time_point: datetime, client: str, workout_name: str) \
             -> bool:
@@ -385,11 +393,10 @@ class Gym:
         True
         """
         lst = []
-        for rooms in self._schedule[time_point]:
-            for room in rooms:
-                instructor = self._schedule[time_point][room][0].name
-                workout = self._schedule[time_point][room][1].get_name()
-                lst.append((room, instructor, workout))
+        for room in self._schedule[time_point]:
+            instructor = self._schedule[time_point][room][0].name
+            workout = self._schedule[time_point][room][1].get_name()
+            lst.append((room, instructor, workout))
         return lst
 
     def instructor_hours(self, time1: datetime, time2: datetime) -> \
@@ -427,13 +434,12 @@ class Gym:
         True
         """
         hours = {}
-        for rooms in self._schedule[time1]:
-            for room in rooms:
-                instr_id = self._schedule[time1][room][0].get_id()
-                if instr_id not in hours and time1 < time2:
-                    hours[instr_id] = 0
-                else:
-                    hours[instr_id] += 1
+        for room in self._schedule[time1]:
+            instr_id = self._schedule[time1][room][0].get_id()
+            if instr_id not in hours and time1 < time2:
+                hours[instr_id] = 0
+            else:
+                hours[instr_id] += 1
         return hours
 
     def payroll(self, time1: datetime, time2: datetime, base_rate: float) \
