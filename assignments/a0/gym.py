@@ -480,8 +480,12 @@ class Gym:
         >>> ac.payroll(t1, t2, 25.0)
         [(1, 'Diane', 1, 26.5), (2, 'David', 0, 0.0)]
         """
-        # TODO: implement this method!
-        pass
+        lst = []
+        id_hours = self.instructor_hours(time1, time2)
+        for id_ in id_hours:
+            name = self._instructors[id_].name
+            lst.append((id_, name, id_hours[id_], base_rate + BONUS_RATE))
+        return lst
 
 
 def parse_instructor(file: TextIO, header: str) -> Instructor:
