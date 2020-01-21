@@ -146,7 +146,10 @@ class Instructor:
         >>> matylda.can_teach(kickboxing)
         True
         """
-        return workout_class in self._certificates
+        for certificate in workout_class.get_required_certificates():
+            if certificate in self._certificates:
+                return True
+        return False
 
 
 class Gym:
@@ -296,7 +299,7 @@ class Gym:
         """
         if time_point not in self._schedule:
             if room_name not in self._schedule[time_point]:
-                if workout_name not in self._schedule[time_point][room_name][1] \
+                if workout_name not in self._schedule[time_point][room_name][1]\
                         and instr_id not in \
                         self._schedule[time_point][room_name][0]:
                     self._schedule[time_point] = {
@@ -423,8 +426,15 @@ class Gym:
         >>> ac.instructor_hours(t1, t2) == {1: 1, 2: 0}
         True
         """
-        # TODO: implement this method!
-        pass
+        hours = {}
+        for rooms in self._schedule[time1]:
+            for room in rooms:
+                instr_id = self._schedule[time1][room][0].get_id()
+                if instr_id not in hours and time1 < time2:
+                    hours[instr_id] = 0
+                else:
+                    hours[instr_id] += 1
+        return hours
 
     def payroll(self, time1: datetime, time2: datetime, base_rate: float) \
             -> List[Tuple[int, str, int, float]]:
