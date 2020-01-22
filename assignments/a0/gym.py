@@ -490,7 +490,8 @@ class Gym:
         id_hours = self.instructor_hours(time1, time2)
         for id_ in id_hours:
             name = self._instructors[id_].name
-            lst.append((id_, name, id_hours[id_], base_rate + BONUS_RATE))
+            salary = base_rate * id_hours[id_] + BONUS_RATE * id_hours[id_]
+            lst.append((id_, name, id_hours[id_], salary))
         return lst
 
 
