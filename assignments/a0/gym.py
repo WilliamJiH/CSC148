@@ -396,7 +396,7 @@ class Gym:
         for room in self._schedule[time_point]:
             instructor = self._schedule[time_point][room][0].name
             workout = self._schedule[time_point][room][1].get_name()
-            lst.append((room, instructor, workout))
+            lst.append((instructor, workout, room))
         return lst
 
     def instructor_hours(self, time1: datetime, time2: datetime) -> \
