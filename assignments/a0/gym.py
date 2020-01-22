@@ -354,9 +354,9 @@ class Gym:
         >>> ac.register(sep_9_2019_12_00, 'Philip', 'Boot Camp')
         False
         """
-        room_name = ''
-        for room, value in self._schedule[time_point]:
-            if workout_name in value:
+        room_name = None
+        for room, value in self._schedule[time_point].items():
+            if workout_name == value[1].get_name():
                 room_name = room
         if client not in self._schedule[time_point][room_name][2] and len(
                 self._schedule[time_point][room_name][2]) < \
