@@ -434,11 +434,11 @@ class Gym:
         True
         """
         hours = {}
-        for room in self._schedule[time1]:
-            instr_id = self._schedule[time1][room][0].get_id()
-            if instr_id not in hours and time1 < time2:
-                hours[instr_id] = 0
-            else:
+        for instructor_id in self._instructors:
+            hours[instructor_id] = 0
+        for date in self._schedule:
+            for room in self._schedule[date]:
+                instr_id = self._schedule[time1][room][0].get_id()
                 hours[instr_id] += 1
         return hours
 
@@ -647,14 +647,14 @@ def load_data(file_name: str, gym_name: str) -> Gym:
 
 
 if __name__ == '__main__':
-    import python_ta
-
-    python_ta.check_all(config={
-        'allowed-io': ['load_data'],
-        'allowed-import-modules': ['doctest', 'python_ta', 'typing',
-                                   'datetime'],
-        'max-attributes': 15,
-    })
+    # import python_ta
+    #
+    # python_ta.check_all(config={
+    #     'allowed-io': ['load_data'],
+    #     'allowed-import-modules': ['doctest', 'python_ta', 'typing',
+    #                                'datetime'],
+    #     'max-attributes': 15,
+    # })
 
     import doctest
 
