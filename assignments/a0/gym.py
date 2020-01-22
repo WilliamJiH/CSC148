@@ -434,12 +434,13 @@ class Gym:
         True
         """
         hours = {}
-        for instructor_id in self._instructors:
-            hours[instructor_id] = 0
-        for date in self._schedule:
-            for room in self._schedule[date]:
-                instr_id = self._schedule[time1][room][0].get_id()
-                hours[instr_id] += 1
+        if time1 < time2:
+            for instructor_id in self._instructors:
+                hours[instructor_id] = 0
+            for date in self._schedule:
+                for room in self._schedule[date]:
+                    instr_id = self._schedule[time1][room][0].get_id()
+                    hours[instr_id] += 1
         return hours
 
     def payroll(self, time1: datetime, time2: datetime, base_rate: float) \
@@ -648,14 +649,14 @@ def load_data(file_name: str, gym_name: str) -> Gym:
 
 
 if __name__ == '__main__':
-    # import python_ta
-    #
-    # python_ta.check_all(config={
-    #     'allowed-io': ['load_data'],
-    #     'allowed-import-modules': ['doctest', 'python_ta', 'typing',
-    #                                'datetime'],
-    #     'max-attributes': 15,
-    # })
+    import python_ta
+
+    python_ta.check_all(config={
+        'allowed-io': ['load_data'],
+        'allowed-import-modules': ['doctest', 'python_ta', 'typing',
+                                   'datetime'],
+        'max-attributes': 15,
+    })
 
     import doctest
 
