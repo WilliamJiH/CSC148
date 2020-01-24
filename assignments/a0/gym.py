@@ -355,6 +355,9 @@ class Gym:
         for room, value in self._schedule[time_point].items():
             if workout_name == value[1].get_name():
                 room_name = room
+        for room in self._schedule[time_point]:
+            if client in self._schedule[time_point][room][2]:
+                return False
         if client not in self._schedule[time_point][room_name][2] and len(
                 self._schedule[time_point][room_name][2]) < \
                 self._rooms[room_name]:
@@ -490,9 +493,12 @@ class Gym:
         """
         lst = []
         id_hours = self.instructor_hours(time1, time2)
+
         for id_ in id_hours:
             name = self._instructors[id_].name
-            salary = base_rate * id_hours[id_] + BONUS_RATE * id_hours[id_]
+            get_certificate = self._instructors[id_].get_num_certificates()
+            salary = base_rate * id_hours[id_] + BONUS_RATE * \
+                     id_hours[id_] * get_certificate
             lst.append((id_, name, id_hours[id_], salary))
         return lst
 
