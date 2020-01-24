@@ -300,16 +300,16 @@ class Gym:
         """
         instructor = self._instructors[instr_id]
         workout = self._workouts[workout_name]
-        unique = len(self._instructors) >= len(set(self._instructors))
         rooms = self._schedule.get(time_point, {})
-        if rooms != {}:
-            if room_name not in rooms and instructor.can_teach(workout) and \
-                    unique:
-                self._schedule[time_point] = {
-                    room_name: (instructor, workout, [])}
-                return True
-            return False
-        elif rooms == {} and instructor.can_teach(workout) and unique:
+        if rooms != {} and room_name not in rooms and \
+                instructor.can_teach(workout):
+            for room in rooms:
+                if rooms[room][0].get_id() == instr_id:
+                    return False
+            self._schedule[time_point].update(
+                {room_name: (instructor, workout, [])})
+            return True
+        elif rooms == {} and instructor.can_teach(workout):
             self._schedule[time_point] = {
                 room_name: (instructor, workout, [])}
             return True
@@ -434,12 +434,13 @@ class Gym:
         True
         """
         hours = {}
-        if time1 < time2:
-            for instructor_id in self._instructors:
-                hours[instructor_id] = 0
-            for date in self._schedule:
-                for room in self._schedule[date]:
-                    instr_id = self._schedule[time1][room][0].get_id()
+        for instr_id in self._instructors:
+            if instr_id not in hours:
+                hours[instr_id] = 0
+        for time in self._schedule:
+            if time1 <= time <= time2:
+                for room in self._schedule[time]:
+                    instr_id = self._schedule[time][room][0].get_id()
                     hours[instr_id] += 1
         return hours
 
