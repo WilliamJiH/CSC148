@@ -146,9 +146,12 @@ class Instructor:
         >>> matylda.can_teach(kickboxing)
         True
         """
-        for certificate in workout_class.get_required_certificates():
-            if certificate in self._certificates:
-                return True
+        required_certificates = workout_class.get_required_certificates()
+        for certificate in self._certificates:
+            if certificate in required_certificates:
+                required_certificates.remove(certificate)
+        if len(required_certificates) == 0:
+            return True
         return False
 
 
@@ -197,7 +200,6 @@ class Gym:
     _rooms: Dict[str, int]
     _schedule: Dict[datetime,
                     Dict[str, Tuple[Instructor, WorkoutClass, List[str]]]]
-    _clients: List[str]
 
     def __init__(self, gym_name: str) -> None:
         """Initialize a new Gym with <name> that has no instructors, workout
@@ -212,7 +214,6 @@ class Gym:
         self._workouts = {}
         self._rooms = {}
         self._schedule = {}
-        self._clients = []
 
     def add_instructor(self, instructor: Instructor) -> bool:
         """Add a new <instructor> to this Gym's roster iff the <instructor>
@@ -225,7 +226,7 @@ class Gym:
         >>> ac.add_instructor(diane)
         True
         """
-        if instructor not in self._instructors:
+        if instructor.get_id() not in self._instructors:
             self._instructors[instructor.get_id()] = instructor
             return True
         return False
@@ -241,7 +242,7 @@ class Gym:
         >>> ac.add_workout_class(kickboxing)
         True
         """
-        if workout_class not in self._workouts:
+        if workout_class.get_name() not in self._workouts:
             self._workouts[workout_class.get_name()] = workout_class
             return True
         return False
@@ -297,24 +298,22 @@ class Gym:
         boot_camp.get_name(), diane.get_id())
         True
         """
-        rooms = self._schedule[time_point]
-        workouts = self._schedule[time_point][room_name][1]
-        if len(self._schedule) > 0:
-            if time_point not in self._schedule and room_name not in rooms and workout_name not in workouts and instr_id not in self._schedule[time_point][room_name][0]:
-                self._schedule[time_point] = {
-                    room_name: (
-                        self._instructors[instr_id],
-                        self._workouts[workout_name],
-                        self._clients)}
-                return True
-            return False
-        else:
-            self._schedule[time_point] = {
-                room_name: (
-                    self._instructors[instr_id],
-                    self._workouts[workout_name],
-                    self._clients)}
+        instructor = self._instructors[instr_id]
+        workout = self._workouts[workout_name]
+        rooms = self._schedule.get(time_point, {})
+        if rooms != {} and room_name not in rooms and \
+                instructor.can_teach(workout):
+            for room in rooms:
+                if rooms[room][0].get_id() == instr_id:
+                    return False
+            self._schedule[time_point].update(
+                {room_name: (instructor, workout, [])})
             return True
+        elif rooms == {} and instructor.can_teach(workout):
+            self._schedule[time_point] = {
+                room_name: (instructor, workout, [])}
+            return True
+        return False
 
     def register(self, time_point: datetime, client: str, workout_name: str) \
             -> bool:
@@ -356,6 +355,9 @@ class Gym:
         for room, value in self._schedule[time_point].items():
             if workout_name == value[1].get_name():
                 room_name = room
+        for room in self._schedule[time_point]:
+            if client in self._schedule[time_point][room][2]:
+                return False
         if client not in self._schedule[time_point][room_name][2] and len(
                 self._schedule[time_point][room_name][2]) < \
                 self._rooms[room_name]:
@@ -390,12 +392,15 @@ class Gym:
         >>> ('Diane', 'Boot Camp', 'Dance Studio') in ac.offerings_at(t1)
         True
         """
-        lst = []
-        for room in self._schedule[time_point]:
-            instructor = self._schedule[time_point][room][0].name
-            workout = self._schedule[time_point][room][1].get_name()
-            lst.append((instructor, workout, room))
-        return lst
+        offers = []
+        rooms = self._schedule.get(time_point, {})
+        if rooms == {}:
+            return []
+        for room in rooms:
+            instructor = rooms[room][0].name
+            workout = rooms[room][1].get_name()
+            offers.append((instructor, workout, room))
+        return offers
 
     def instructor_hours(self, time1: datetime, time2: datetime) -> \
             Dict[int, int]:
@@ -432,12 +437,13 @@ class Gym:
         True
         """
         hours = {}
-        for instructor_id in self._instructors:
-            hours[instructor_id] = 0
-        for date in self._schedule:
-            if time1 <= date <= time2:
-                for room in self._schedule[date]:
-                    instr_id = self._schedule[time1][room][0].get_id()
+        for instr_id in self._instructors:
+            if instr_id not in hours:
+                hours[instr_id] = 0
+        for time in self._schedule:
+            if time1 <= time <= time2:
+                for room in self._schedule[time]:
+                    instr_id = self._schedule[time][room][0].get_id()
                     hours[instr_id] += 1
         return hours
 
@@ -485,11 +491,14 @@ class Gym:
         >>> ac.payroll(t1, t2, 25.0)
         [(1, 'Diane', 1, 26.5), (2, 'David', 0, 0.0)]
         """
-        lst = []
+        lst = sorted([], key=lambda x: x[0])
         id_hours = self.instructor_hours(time1, time2)
+
         for id_ in id_hours:
             name = self._instructors[id_].name
-            salary = base_rate * id_hours[id_] + BONUS_RATE * id_hours[id_]
+            get_certificate = self._instructors[id_].get_num_certificates()
+            salary = base_rate * id_hours[id_] + BONUS_RATE * \
+                     id_hours[id_] * get_certificate
             lst.append((id_, name, id_hours[id_], salary))
         return lst
 
