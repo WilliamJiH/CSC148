@@ -491,7 +491,7 @@ class Gym:
         >>> ac.payroll(t1, t2, 25.0)
         [(1, 'Diane', 1, 26.5), (2, 'David', 0, 0.0)]
         """
-        lst = []
+        lst = sorted([], key=lambda x: x[0])
         id_hours = self.instructor_hours(time1, time2)
 
         for id_ in id_hours:
