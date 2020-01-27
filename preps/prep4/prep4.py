@@ -53,7 +53,12 @@ def peek(stack: Stack) -> Optional[Any]:
     >>> stack.pop()
     2
     """
-    pass
+    if not stack.is_empty():
+        s = stack.pop()
+        stack.push(s)
+        return s
+    else:
+        return None
 
 
 def reverse_top_two(stack: Stack) -> None:
@@ -72,7 +77,10 @@ def reverse_top_two(stack: Stack) -> None:
     >>> stack.is_empty()
     True
     """
-    pass
+    s1 = stack.pop()
+    s2 = stack.pop()
+    stack.push(s1)
+    stack.push(s2)
 
 
 def remove_all(queue: Queue) -> None:
@@ -86,7 +94,8 @@ def remove_all(queue: Queue) -> None:
     >>> queue.is_empty()
     True
     """
-    pass
+    while not queue.is_empty():
+        queue.dequeue()
 
 
 def remove_all_but_one(queue: Queue) -> None:
@@ -107,8 +116,10 @@ def remove_all_but_one(queue: Queue) -> None:
     >>> queue.is_empty()
     True
     """
-    pass
-
+    s = None
+    while not queue.is_empty():
+        s = queue.dequeue()
+    queue.enqueue(s)
 
 
 # This method has already been completed for you, but there is a bug in it.
@@ -118,11 +129,11 @@ def remove_all_but_one(queue: Queue) -> None:
 # You are not required to fix the bug, although you may do so if you'd like.
 def add_in_order(stack: Stack, lst: list) -> None:
     """
-    Add all items in <lst> to <stack>, so that when items are removed from 
+    Add all items in <lst> to <stack>, so that when items are removed from
     <stack>, they are returned in <lst> order.
-    
+
     Precondition: stack.is_empty() is True
-    
+
     >>> stack = Stack()
     >>> lst = [1, 1]
     >>> add_in_order(stack, lst)
@@ -138,11 +149,13 @@ def add_in_order(stack: Stack, lst: list) -> None:
 
 if __name__ == '__main__':
     import doctest
+
     doctest.testmod()
 
     # Remember, to get this to work you need to Run this file, not just the
     # doctests in this file!
     import python_ta
+
     python_ta.check_all(config={
         'extra-imports': ['adts']
     })
