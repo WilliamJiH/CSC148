@@ -34,21 +34,26 @@ from hypothesis.strategies import integers, lists
 
 from adts import Stack, Queue
 from prep4 import peek, reverse_top_two, remove_all, remove_all_but_one, \
-     add_in_order
+    add_in_order
+
 
 # TODO: Implement at least 1 test case for add_in_order() that will
 #       fail on the provided (buggy) implementation but pass on a correct
 #       implementation.
 
-
-
-
+def test_add_in_order() -> None:
+    stack = Stack()
+    lst = [1, 2]
+    add_in_order(stack, lst)
+    results = [stack.pop(), stack.pop()]
+    assert lst == results
+    assert stack.is_empty()
 
 
 # Below are provided sample test cases for your use. You are encouraged
 # to add additional test cases.
 # WARNING: THIS IS AN EXTREMELY INCOMPLETE SET OF TESTS!
-# Add your own to practice writing tests and to be confident your code is 
+# Add your own to practice writing tests and to be confident your code is
 # correct.
 # For more information on hypothesis (one of the testing libraries we're using),
 # please see
@@ -107,4 +112,5 @@ def test_remove_all_but_one_doctest() -> None:
 
 if __name__ == '__main__':
     import pytest
+
     pytest.main(['prep4_starter_tests.py'])
