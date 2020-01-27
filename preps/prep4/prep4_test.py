@@ -1,6 +1,8 @@
 import prep4 as p4
 from adts import *
 import unittest
+
+
 class test_stack(unittest.TestCase):
     def test_peek_none(self):
         stack = Stack()
@@ -30,7 +32,7 @@ class test_stack(unittest.TestCase):
         stack.push(1)
         stack.push(2)
         p4.reverse_top_two(stack)
-        expect = [1,2]
+        expect = [1, 2]
         actural = []
         actural.append(stack.pop())
         actural.append(stack.pop())
@@ -42,7 +44,7 @@ class test_stack(unittest.TestCase):
         stack.push("b")
         stack.push("c")
         p4.reverse_top_two(stack)
-        expect = ['b','c']
+        expect = ['b', 'c']
         actural = []
         actural.append(stack.pop())
         actural.append(stack.pop())
@@ -108,5 +110,7 @@ class test_queue(unittest.TestCase):
         expect = 4
         actural = queue.dequeue()
         self.assertEqual(expect, actural)
+
+
 if __name__ == "__main__":
-    unittest.main(exit = False)
+    unittest.main(exit=False)
