@@ -92,11 +92,12 @@ class LinkedList:
         >>> len(lst)
         3
         """
-        # TODO: implement this method
-        # curr = self._first
-        # while curr is not None:
-        #     ... curr.item ...
-        #     curr = curr.next
+        curr = self._first
+        cnt = 0
+        while curr is not None:
+            cnt += 1
+            curr = curr.next
+        return cnt
 
     def __contains__(self, item: Any) -> bool:
         """Return whether <item> is in this list.
@@ -109,11 +110,11 @@ class LinkedList:
         >>> 4 in lst
         False
         """
-        # TODO: implement this method
-        # curr = self._first
-        # while curr is not None:
-        #     ... curr.item ...
-        #     curr = curr.next
+        curr = self._first
+        while curr is not None:
+            if curr.item == item:
+                return True
+            curr = curr.next
 
     # HINTS: for this one, you'll be adding a new item to a linked list.
     #   1. Create a new _Node object first.
@@ -131,11 +132,19 @@ class LinkedList:
         >>> lst._first.next.item
         2
         """
-        # TODO: implement this method
-        # curr = self._first
-        # while curr is not None:
-        #     ... curr.item ...
-        #     curr = curr.next
+        newest = _Node(item)
+        if self.__len__() == 0:
+            self._first = newest
+        else:
+            newest.next = None
+            curr = self._first
+            last_node = None
+            while curr is not None:
+                if curr.next is None:
+                    last_node = curr
+                curr = curr.next
+            last_node.next = newest
+
 
 # ------------------------------------------------------------------------
 # Helpers for creating linked lists (testing purposes only)
@@ -162,10 +171,12 @@ def three_items(x1: Any, x2: Any, x3: Any) -> LinkedList:
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-io': ['print_items'],
         'disable': ['W0212']
     })
 
     import doctest
+
     doctest.testmod()

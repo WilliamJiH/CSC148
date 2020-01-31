@@ -30,6 +30,7 @@ def test_my_test_case():
 from typing import List
 from prep5 import LinkedList, _Node
 
+
 # TODO: Write test cases for __contains__
 #       We will have a correct version of prep5.py, as well as a version
 #       with a bug in the __contains__ method to test your test cases on.
@@ -41,17 +42,22 @@ from prep5 import LinkedList, _Node
 #
 #       You may assume __len__ and append work properly in both versions that
 #       we test your test cases on.
-
-
-
-
-
+def test_contains_pass() -> None:
+    lst = LinkedList()
+    node1 = _Node(10)
+    node2 = _Node(20)
+    node3 = _Node(30)
+    node1.next = node2
+    node2.next = node3
+    lst._first = node1
+    assert 10 in lst
+    assert not (4 in lst)
 
 
 # Below are provided sample test cases for your use. You are encouraged
 # to add additional test cases.
 # WARNING: THIS IS AN EXTREMELY INCOMPLETE SET OF TESTS!
-# Add your own to practice writing tests and to be confident your code is 
+# Add your own to practice writing tests and to be confident your code is
 # correct.
 def test_len_empty() -> None:
     """Test LinkedList.__len__ for an empty linked list."""
@@ -103,4 +109,5 @@ def test_append_one() -> None:
 
 if __name__ == '__main__':
     import pytest
+
     pytest.main(['prep5_starter_tests.py'])
