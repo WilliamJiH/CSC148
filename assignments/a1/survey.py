@@ -383,12 +383,15 @@ class Survey:
         This new survey should use a HomogeneousCriterion as a default criterion
         and should use 1 as a default weight.
         """
+        self._questions = {}
+        self._criteria = {}
+        self._weights = {}
+        self._default_criterion = HomogeneousCriterion()
+        self._default_weight = 1
         for question in questions:
             self._questions[question.id] = question
             self._criteria[question.id] = self._get_criterion(question)
             self._weights[question.id] = self._get_weight(question)
-        self._default_criterion = HomogeneousCriterion()
-        self._default_weight = 1
 
     def __len__(self) -> int:
         """ Return the number of questions in this survey """
