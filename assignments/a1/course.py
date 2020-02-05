@@ -80,7 +80,7 @@ class Student:
         """
         check_validate = \
             question.validate_answer(self._answers.get(question.id))
-        return question in self._answers and check_validate
+        return question.id in self._answers and check_validate
 
     def set_answer(self, question: Question, answer: Answer) -> None:
         """
