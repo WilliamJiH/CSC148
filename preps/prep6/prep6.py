@@ -45,7 +45,7 @@ before in the readings or comprehension questions.
 from typing import Union, List
 
 
-def num_positives(obj: Union[int, List]) -> int:
+def num_positives(obj: Union[int, List], n: int = 0) -> int:
     """Return the number of positive integers in <obj>.
 
     Remember, 0 is *not* positive.
@@ -57,7 +57,13 @@ def num_positives(obj: Union[int, List]) -> int:
     >>> num_positives([1, -2, [-10, 2, [3], 4, -5], 4])
     5
     """
-    pass
+    if isinstance(obj, int):
+        if obj > 0:
+            n += 1
+    else:
+        for item in obj:
+            n += num_positives(item)
+    return n
 
 
 def nested_max(obj: Union[int, List]) -> int:
@@ -72,7 +78,9 @@ def nested_max(obj: Union[int, List]) -> int:
     >>> nested_max([1, 2, [1, 2, [3], 4, 5], 4])
     5
     """
-    pass
+    if isinstance(obj, int):
+        return obj
+    return max(nested_max(e) if isinstance(e, list) else e for e in obj)
 
 
 def max_length(obj: Union[int, List]) -> int:
@@ -90,12 +98,20 @@ def max_length(obj: Union[int, List]) -> int:
     >>> max_length([1, 2, [1, 2, [3], 4, 5], 4])
     5
     """
-    pass
+    if not isinstance(obj, list):
+        return 0
+    elif all(isinstance(sub, int) for sub in obj):
+        return len(obj)
+    else:
+        return max(max_length(sub) for sub in obj) if len(obj) < max(
+            max_length(sub) for sub in obj) else len(obj)
 
 
 if __name__ == '__main__':
     import doctest
+
     doctest.testmod()
 
     import python_ta
+
     python_ta.check_all()
