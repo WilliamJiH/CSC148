@@ -34,7 +34,12 @@ from prep6 import num_positives, nested_max, max_length
 def test_num_positives_doctest_example() -> None:
     """Test num_positive on one of the given doctest examples."""
     assert num_positives([1, -2, [-10, 2, [3], 4, -5], 4]) == 5
-    
+
+
+def test_num_positives_multi_lists() -> None:
+    assert num_positives([[[[[[[7]]]]]]]) == 1
+    assert num_positives([[[-10]]]) == 0
+
 
 def test_num_positives_empty_list() -> None:
     """Test num_positives on am empty list."""
@@ -46,11 +51,29 @@ def test_nested_max_doctest_example() -> None:
     assert nested_max([1, 2, [1, 2, [3], 4, 5], 4]) == 5
 
 
+def test_nested_max_empty_list() -> None:
+    assert nested_max([]) == 0
+
+
+def test_nested_max_multi_lists() -> None:
+    assert nested_max([[[1], [2, 3, 4]], [1, 1, 1]]) == 4
+    assert nested_max([1, 1, 1, 1]) == 1
+
+
 def test_max_length_doctest_example() -> None:
     """Test nested_max on one of the given doctest examples."""
     assert max_length([1, 2, [1, 2], 4]) == 4
 
 
+def test_max_length_empty_list() -> None:
+    assert max_length([]) == 0
+
+
+def test_max_length_multi_lists() -> None:
+    assert max_length([[[2]]]) == 1
+
+
 if __name__ == '__main__':
     import pytest
+
     pytest.main(['prep6_sample_test.py'])
