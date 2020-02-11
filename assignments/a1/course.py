@@ -130,8 +130,16 @@ class Course:
         If adding any student would violate a representation invariant,
         do not add any of the students in <students> to the course.
         """
+        potential = self.students[:]
         for student in students:
-            if student not in self.students:
+            potential.append(student)
+        flag = True
+        for i in range(0, len(potential) - 1):
+            for j in range(i + 1, len(potential)):
+                if potential[i].id == potential[j].id:
+                    flag = False
+        if flag:
+            for student in students:
                 self.students.append(student)
 
     def all_answered(self, survey: Survey) -> bool:
