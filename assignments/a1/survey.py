@@ -242,7 +242,7 @@ class YesNoQuestion(Question):
         You can choose the precise format of this string.
         """
         return 'Question: {question}\n {description}'.format(
-            question=self.text, description='Yes\nNo')
+            question=self.text, description='True\nFalse')
 
     def validate_answer(self, answer: Answer) -> bool:
         """
@@ -304,8 +304,9 @@ class CheckboxQuestion(MultipleChoiceQuestion):
         An answer is valid iff its content is a non-empty list containing
         unique possible answers to this question.
         """
-        return len(answer.content) > len(set(answer.content)) and \
-               answer.content in self._options
+        return isinstance(answer.content, list) and len(answer.content) > len(
+            set(answer.content)) and all(
+            ans in self._options for ans in answer.content)
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """

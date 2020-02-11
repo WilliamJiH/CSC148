@@ -132,20 +132,10 @@ class HeterogeneousCriterion(HomogeneousCriterion):
         === Precondition ===
         len(answers) > 0
         """
-        if len(answers) == 1 and question.validate_answer(answers[0]):
-            return 0.0
-        elif len(answers) > 1 and (all(
-                [question.validate_answer(answer) for answer in answers]) and
-                                   question.validate_answer(answers[0])):
-            scores = []
-            times = 0
-            for i in range(len(answers)):
-                for j in range(i + 1, len(answers) - 1):
-                    times += 1
-                    scores.append(question.get_similarity(answers[i],
-                                                          answers[j]))
-            return sum(scores) / times
-        else:
+        try:
+            s = HomogeneousCriterion.score_answers(self, question, answers)
+            return 1.0 - s
+        except InvalidAnswerError:
             raise InvalidAnswerError
 
 

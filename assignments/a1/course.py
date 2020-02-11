@@ -79,7 +79,7 @@ class Student:
         id as <question> and that answer is a valid answer for <question>.
         """
         check_validate = \
-            question.validate_answer(self._answers.get(question.id))
+            question.validate_answer(self.get_answer(question))
         return question.id in self._answers and check_validate
 
     def set_answer(self, question: Question, answer: Answer) -> None:
