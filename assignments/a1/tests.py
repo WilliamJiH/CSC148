@@ -7,46 +7,67 @@ from typing import List
 
 
 @pytest.fixture
-def course148() -> course.Course:
-    return course.Course('CSC148')
+def empty_course() -> course.Course:
+    return course.Course("CSC148")
 
 
 @pytest.fixture
-def new_students() -> List[course.Student]:
+def students() -> List[course.Student]:
     return [course.Student(1, 'Gary'), course.Student(2, 'Dino'),
             course.Student(3, 'William'), course.Student(4, 'Ziyue')]
 
 
 @pytest.fixture
-def course_with_students(course148, new_students) -> course.Course:
-    course148.enroll_students(new_students)
-    return course148
+def duplicate_students() -> List[course.Student]:
+    return [course.Student(5, 'Anny'), course.Student(5, 'Anny'),
+            course.Student(6, 'Nick'), course.Student(7, 'Diane')]
 
 
 class TestCourse:
-    def test_enroll_students(self, course148, new_students) -> None:
-        course148.enroll_students(new_students)
-        for student in new_students:
-            assert student in course148.students
+    def test_enroll_students(self, empty_course, students) -> None:
+        empty_course.enroll_students(students)
+        for student in students:
+            assert student in empty_course.students
+
+    def test_enroll_duplicate_students(
+            self, empty_course, duplicate_students) -> None:
+        empty_course.enroll_students(duplicate_students)
+        assert len(empty_course.students) == 0
+
+    def test_enroll_students_after_student_not_empty(
+            self, empty_course, students, duplicate_students):
+        empty_course.enroll_students(students)
+        assert len(empty_course.students) == 4
+        empty_course.enroll_students(duplicate_students)
+        assert len(empty_course.students) == 4
+
+    def test_enroll_empty_students_after_student_not_empty(
+            self, empty_course, students):
+        empty_course.enroll_students(students)
+        assert len(empty_course.students) == 4
+        empty_course.enroll_students([])
+        assert len(empty_course.students) == 4
 
     def test_all_answered(self) -> None:
         pass
 
-    def test_get_students(self, course_with_students) -> None:
-        students = course_with_students.get_students()
+    def test_get_students(self, empty_course, students) -> None:
+        empty_course.enroll_students(students)
         for student in students:
-            assert student in course_with_students.students
+            assert student in empty_course.students
 
 
 class TestStudent:
-    def test___str__(self, new_students) -> None:
-        student = new_students[0]
-        assert student.name == str(student)
+    def test___str__(self, students) -> None:
+        assert students[0].name == str(students[0])
+        assert students[1].name == str(students[1])
+        assert students[2].name == str(students[2])
+        assert students[3].name == str(students[3])
 
     def test_has_answer(self) -> None:
         pass
 
-    def test_set_answer(self) -> None:
+    def test_set_answer(self, students) -> None:
         pass
 
     def test_get_answer(self) -> None:
