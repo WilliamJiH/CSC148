@@ -3,22 +3,45 @@ import survey
 import criterion
 import grouper
 import pytest
+from typing import List
+
+
+@pytest.fixture
+def course148() -> course.Course:
+    return course.Course('CSC148')
+
+
+@pytest.fixture
+def new_students() -> List[course.Student]:
+    return [course.Student(1, 'Gary'), course.Student(2, 'Dino'),
+            course.Student(3, 'William'), course.Student(4, 'Ziyue')]
+
+
+@pytest.fixture
+def course_with_students(course148, new_students) -> course.Course:
+    course148.enroll_students(new_students)
+    return course148
 
 
 class TestCourse:
-    def test_enroll_students(self) -> None:
-        pass
+    def test_enroll_students(self, course148, new_students) -> None:
+        course148.enroll_students(new_students)
+        for student in new_students:
+            assert student in course148.students
 
     def test_all_answered(self) -> None:
         pass
 
-    def test_get_students(self) -> None:
-        pass
+    def test_get_students(self, course_with_students) -> None:
+        students = course_with_students.get_students()
+        for student in students:
+            assert student in course_with_students.students
 
 
 class TestStudent:
-    def test___str__(self) -> None:
-        pass
+    def test___str__(self, new_students) -> None:
+        student = new_students[0]
+        assert student.name == str(student)
 
     def test_has_answer(self) -> None:
         pass
