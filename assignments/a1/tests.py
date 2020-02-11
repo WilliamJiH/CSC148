@@ -1,68 +1,188 @@
-class Test_Student:
+import course
+import survey
+import criterion
+import grouper
+import pytest
 
-    def test_student_has_answer(self):
+
+class TestCourse:
+    def test_enroll_students(self) -> None:
         pass
 
-    def test_student_set_answer(self):
+    def test_all_answered(self) -> None:
         pass
 
-    def test_student_get_answer(self):
-        pass
-
-
-class Test_Course:
-
-    def test_course_enroll_students(self):
-        pass
-
-    def test_course_all_answered(self):
-        pass
-
-    def test_course_get_students(self):
+    def test_get_students(self) -> None:
         pass
 
 
-class Test_Question:
+class TestStudent:
+    def test___str__(self) -> None:
+        pass
 
-    def test_question_(self):
+    def test_has_answer(self) -> None:
+        pass
+
+    def test_set_answer(self) -> None:
+        pass
+
+    def test_get_answer(self) -> None:
         pass
 
 
-class Test_Survey:
-
-    def test_survey_set_default_criterion(self):
+class TestHomogeneousCriterion:
+    def test_score_answers(self) -> None:
         pass
 
-    def test_survey_set_default_weight(self):
+
+class TestHeterogeneousCriterion:
+    def test_score_answers(self) -> None:
         pass
 
-    def test_survey_get_question(self):
+
+class TestLonelyMemberCriterion:
+    def test_score_answers(self) -> None:
         pass
 
-    def test_survey__get_criterion(self):
+
+def test_slice_list() -> None:
+    lst = list(range(7))
+    assert grouper.slice_list(lst, 3) == [[0, 1, 2], [3, 4, 5], [6]]
+
+
+def test_windows() -> None:
+    lst = list(range(5))
+    assert grouper.windows(lst, 3) == [[0, 1, 2], [1, 2, 3], [2, 3, 4]]
+
+
+class TestAlphaGrouper:
+    def test_make_grouping(self) -> None:
         pass
 
-    def test_survey__get_weight(self):
+
+class TestRandomGrouper:
+    def test_make_grouping(self) -> None:
         pass
 
-    def test_survey_set_weight(self):
+
+class TestGreedyGrouper:
+    def test_make_grouping(self) -> None:
         pass
 
-    def test_survey_set_criterion(self):
+
+class TestWindowGrouper:
+    def test_make_grouping(self) -> None:
         pass
 
-    def test_survey_score_students(self):
+
+class TestGroup:
+    def test___len__(self) -> None:
         pass
 
-    def test_survey_score_grouping(self):
+    def test___contains__(self) -> None:
+        pass
+
+    def test___str__(self) -> None:
+        pass
+
+    def test_get_members(self) -> None:
+        pass
+
+
+class TestGrouping:
+    def test___len__(self) -> None:
+        pass
+
+    def test___str__(self) -> None:
+        pass
+
+    def test_add_group(self) -> None:
+        pass
+
+    def test_get_groups(self) -> None:
+        pass
+
+
+class TestSurvey:
+    def test___len__(self) -> None:
+        pass
+
+    def test___contains__(self) -> None:
+        pass
+
+    def test___str__(self) -> None:
+        pass
+
+    def test_get_questions(self) -> None:
+        pass
+
+    def test__get_criterion(self) -> None:
+        pass
+
+    def test__get_weight(self) -> None:
+        pass
+
+    def test_set_weight(self) -> None:
+        pass
+
+    def test_set_criterion(self) -> None:
+        pass
+
+    def test_score_students(self) -> None:
+        pass
+
+    def test_score_grouping(self) -> None:
+        pass
+
+
+class TestAnswer:
+    def test_is_valid(self) -> None:
+        pass
+
+
+class TestMultipleChoiceQuestion:
+    def test___str__(self) -> None:
+        pass
+
+    def test_validate_answer(self) -> None:
+        pass
+
+    def test_get_similarity(self) -> None:
+        pass
+
+
+class TestNumericQuestion:
+    def test___str__(self) -> None:
+        pass
+
+    def test_validate_answer(self) -> None:
+        pass
+
+    def test_get_similarity(self) -> None:
+        pass
+
+
+class TestYesNoQuestion:
+    def test___str__(self) -> None:
+        pass
+
+    def test_validate_answer(self) -> None:
+        pass
+
+    def test_get_similarity(self) -> None:
+        pass
+
+
+class TestCheckboxQuestion:
+    def test___str__(self) -> None:
+        pass
+
+    def test_validate_answer(self) -> None:
+        pass
+
+    def test_get_similarity(self) -> None:
         pass
 
 
 if __name__ == '__main__':
-    import pytest
-    import course
-    import survey
-    import criterion
-    import grouper
-
     pytest.main(['tests.py'])
