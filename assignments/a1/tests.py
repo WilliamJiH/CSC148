@@ -1,11 +1,4 @@
-import unittest
-from course import *
-from survey import *
-from criterion import *
-from grouper import *
-
-
-class Test_Student(unittest.TestCase):
+class Test_Student:
 
     def test_student_has_answer(self):
         pass
@@ -17,7 +10,7 @@ class Test_Student(unittest.TestCase):
         pass
 
 
-class Test_Course(unittest.TestCase):
+class Test_Course:
 
     def test_course_enroll_students(self):
         pass
@@ -29,13 +22,13 @@ class Test_Course(unittest.TestCase):
         pass
 
 
-class Test_Question(unittest.TestCase):
+class Test_Question:
 
     def test_question_(self):
         pass
 
 
-class Test_Survey(unittest.TestCase):
+class Test_Survey:
 
     def test_survey_set_default_criterion(self):
         pass
@@ -63,3 +56,13 @@ class Test_Survey(unittest.TestCase):
 
     def test_survey_score_grouping(self):
         pass
+
+
+if __name__ == '__main__':
+    import pytest
+    import course
+    import survey
+    import criterion
+    import grouper
+
+    pytest.main(['tests.py'])
