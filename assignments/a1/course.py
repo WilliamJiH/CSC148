@@ -17,7 +17,6 @@ All of the files in this directory and all subdirectories are:
 Copyright (c) 2020 Misha Schwartz, Mario Badr, Christine Murad, Diane Horton,
 Sophia Huynh and Jaisie Sin
 
-1
 === Module Description ===
 
 This file contains classes that describe a university course and the students
