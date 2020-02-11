@@ -172,5 +172,4 @@ class LonelyMemberCriterion(Criterion):
 if __name__ == '__main__':
     import python_ta
 
-    python_ta.check_all(config={'extra-imports': ['typing',
-                                                  'survey']})
+    python_ta.check_all(config={'extra-imports': ['typing', 'survey']})
