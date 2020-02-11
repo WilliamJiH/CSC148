@@ -52,7 +52,7 @@ def load_survey(data: Dict[str, Any]) -> survey.Survey:
     for id_, criterion_ in criteria.items():
         survey_.set_criterion(criterion_, questions[id_])
     for id_, weight in weights.items():
-        survey_.set_criterion(questions[id_], weight)
+        survey_.set_criterion(weight, questions[id_])
 
     return survey_
 
