@@ -73,15 +73,14 @@ class Student:
         """ Return the name of this student """
         return self.name
 
-    # 需要修复
+    # Validate_answer 不对
     def has_answer(self, question: Question) -> bool:
         """
         Return True iff this student has an answer for a question with the same
         id as <question> and that answer is a valid answer for <question>.
         """
-        check_validate = \
-            question.validate_answer(self.get_answer(question))
-        return question.id in self._answers and check_validate
+        return question.id in self._answers and question.validate_answer(
+            self._answers[question.id])
 
     def set_answer(self, question: Question, answer: Answer) -> None:
         """
@@ -95,9 +94,7 @@ class Student:
         Return this student's answer to the question <question>. Return None if
         this student does not have an answer to <question>
         """
-        if self.has_answer(question):
-            return self._answers[question.id]
-        return None
+        return self._answers[question.id] if self.has_answer(question) else None
 
 
 class Course:
