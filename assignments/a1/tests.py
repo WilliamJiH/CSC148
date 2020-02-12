@@ -109,8 +109,9 @@ class TestStudent:
         assert students[2].name == str(students[2])
         assert students[3].name == str(students[3])
 
-    def test_has_answer(self) -> None:
-        pass
+    def test_has_answer(self, students, questions, answers) -> None:
+        students[0].set_answer(questions[0], answers[0][0])
+        assert students[0].has_answer(questions[0]) is True
 
     def test_set_single_answer(self, students, questions, answers) -> None:
         students[0].set_answer(questions[0], answers[0][0])
