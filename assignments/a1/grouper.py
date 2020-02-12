@@ -322,7 +322,7 @@ class Group:
         """
         return self._members[:]
 
-# Grouping 需要修复
+# Grouping 需要修复.
 
 
 class Grouping:
