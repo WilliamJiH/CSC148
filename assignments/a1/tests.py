@@ -23,6 +23,45 @@ def duplicate_students() -> List[course.Student]:
             course.Student(6, 'Nick'), course.Student(7, 'Diane')]
 
 
+@pytest.fixture
+def questions() -> List[survey.Question]:
+    return [
+        survey.MultipleChoiceQuestion(
+            1, 'MultipleChoiceQuestion', [
+                'A', 'B']), survey.NumericQuestion(
+            2, 'NumericQuestion?', -1, 2), survey.YesNoQuestion(
+            3, 'YesNoQuestion'), survey.CheckboxQuestion(
+            4, 'CheckboxQuestion', [
+                'B', 'C'])]
+
+
+@pytest.fixture
+def answers() -> List[List[survey.Answer]]:
+    return [[survey.Answer('A'), survey.Answer('B'),
+             survey.Answer('A'), survey.Answer('B')],
+            [survey.Answer(-1), survey.Answer(0),
+             survey.Answer(1), survey.Answer(2)],
+            [survey.Answer(True), survey.Answer(False),
+             survey.Answer(True), survey.Answer(False)],
+            [survey.Answer(['B', 'C']), survey.Answer(['B', 'C']),
+             survey.Answer(['B']), survey.Answer(['C'])]]
+
+
+@pytest.fixture
+def students_with_answers(students, questions, answers) -> List[course.Student]:
+    for i, student in enumerate(students):
+        for j, question in enumerate(questions):
+            student.set_answer(question, answers[j][i])
+    return students
+
+
+@pytest.fixture
+def course_with_students_with_answers(empty_course,
+                                      students_with_answers) -> course.Course:
+    empty_course.enroll_students(students_with_answers)
+    return empty_course
+
+
 class TestCourse:
     def test_enroll_students(self, empty_course, students) -> None:
         empty_course.enroll_students(students)
@@ -35,11 +74,13 @@ class TestCourse:
         assert len(empty_course.students) == 0
 
     def test_enroll_students_after_student_not_empty(
-            self, empty_course, students, duplicate_students):
+            self, empty_course, students):
         empty_course.enroll_students(students)
         assert len(empty_course.students) == 4
-        empty_course.enroll_students(duplicate_students)
-        assert len(empty_course.students) == 4
+        empty_course.enroll_students([course.Student(8, 'Max'), course.Student(
+            9, 'Andrew'), course.Student(10, 'Ray'),
+                                      course.Student(11, 'Charles')])
+        assert len(empty_course.students) == 8
 
     def test_enroll_empty_students_after_student_not_empty(
             self, empty_course, students):
@@ -56,6 +97,10 @@ class TestCourse:
         for student in students:
             assert student in empty_course.students
 
+    def test_get_empty_students(self, empty_course) -> None:
+        empty_course.enroll_students([])
+        assert len(empty_course.get_students()) == 0
+
 
 class TestStudent:
     def test___str__(self, students) -> None:
@@ -67,8 +112,12 @@ class TestStudent:
     def test_has_answer(self) -> None:
         pass
 
-    def test_set_answer(self, students) -> None:
-        pass
+    def test_set_answer(self, students, questions, answers) -> None:
+        for i, student in enumerate(students):
+            for j, question in enumerate(questions):
+                answer = answers[j][i]
+                student.set_answer(question, answer)
+                assert student.get_answer(question) == answer
 
     def test_get_answer(self) -> None:
         pass
