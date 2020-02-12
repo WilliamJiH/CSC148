@@ -47,19 +47,19 @@ def answers() -> List[List[survey.Answer]]:
              survey.Answer(['B']), survey.Answer(['C'])]]
 
 
-@pytest.fixture
-def students_with_answers(students, questions, answers) -> List[course.Student]:
-    for i, student in enumerate(students):
-        for j, question in enumerate(questions):
-            student.set_answer(question, answers[j][i])
-    return students
+# @pytest.fixture
+# def students_with_answers(students, questions, answers) -> List[course.Student]:
+#     for i, student in enumerate(students):
+#         for j, question in enumerate(questions):
+#             student.set_answer(question, answers[j][i])
+#     return students
 
 
-@pytest.fixture
-def course_with_students_with_answers(empty_course,
-                                      students_with_answers) -> course.Course:
-    empty_course.enroll_students(students_with_answers)
-    return empty_course
+# @pytest.fixture
+# def course_with_students_with_answers(empty_course,
+#                                       students_with_answers) -> course.Course:
+#     empty_course.enroll_students(students_with_answers)
+#     return empty_course
 
 
 class TestCourse:
@@ -112,7 +112,13 @@ class TestStudent:
     def test_has_answer(self) -> None:
         pass
 
-    def test_set_answer(self, students, questions, answers) -> None:
+    def test_set_single_answer(self, students, questions, answers) -> None:
+        students[0].set_answer(questions[0], answers[0][0])
+        assert students[0]._answers[questions[0].id] == answers[0][0]
+        assert len(students[0]._answers) == 1
+
+    # get_answer/ has_answer 有问题
+    def test_set_multiple_answers(self, students, questions, answers) -> None:
         for i, student in enumerate(students):
             for j, question in enumerate(questions):
                 answer = answers[j][i]
