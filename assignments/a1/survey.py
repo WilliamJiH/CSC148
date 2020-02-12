@@ -123,7 +123,8 @@ class MultipleChoiceQuestion(Question):
         An answer is valid if its content is one of the possible answers to this
         question.
         """
-        return answer.content in self._options
+        return isinstance(answer.content,
+                          str) and answer.content in self._options
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """
@@ -182,7 +183,8 @@ class NumericQuestion(Question):
         Return True iff the content of <answer> is an integer between the
         minimum and maximum (inclusive) possible answers to this question.
         """
-        return self._min <= answer.content <= self._max
+        return isinstance(answer.content,
+                          int) and self._min <= answer.content <= self._max
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """
@@ -208,12 +210,10 @@ class NumericQuestion(Question):
         === Precondition ===
         <answer1> and <answer2> are both valid answers to this question
         """
-        similarity = (abs(answer1.content - answer2.content) /
-                      (self._max - self._min)) - 1.0
-        if answer1.content == answer2.content and similarity > 1.0:
-            return 1.0
-        else:
-            return similarity
+        similarity = 1.0 - (abs(answer1.content - answer2.content) / (
+                self._max - self._min))
+        return 1.0 if answer1.content == answer2.content and similarity > 1.0 \
+            else similarity
 
 
 class YesNoQuestion(Question):
@@ -306,9 +306,13 @@ class CheckboxQuestion(MultipleChoiceQuestion):
         An answer is valid iff its content is a non-empty list containing
         unique possible answers to this question.
         """
-        return isinstance(answer.content, list) and len(answer.content) > len(
-            set(answer.content)) and all(
-            ans in self._options for ans in answer.content)
+        if isinstance(answer.content, list) and len(answer.content) > 0 and len(
+                answer.content) > len(set(answer.content)):
+            for ans in answer.content:
+                if ans not in self._options:
+                    return False
+            return True
+        return False
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """
