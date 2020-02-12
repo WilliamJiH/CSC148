@@ -25,6 +25,8 @@ evaluate a group of answers to a survey question.
 from __future__ import annotations
 from typing import TYPE_CHECKING, List
 
+# 文件有bug
+
 if TYPE_CHECKING:
     from survey import Question, Answer
 
