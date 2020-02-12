@@ -24,6 +24,8 @@ import course
 import criterion
 import survey
 
+# 修改 load_survey 中的 survey_.set_criterion(questions[id_], weight) 到
+# survey_.set_criterion(weight. questions[id_])
 
 def _load_criterion(data: Dict[str, Any]) -> criterion.Criterion:
     """ Return a criterion created using the information in <data> """
