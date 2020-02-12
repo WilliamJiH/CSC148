@@ -73,6 +73,7 @@ class Student:
         """ Return the name of this student """
         return self.name
 
+    # 需要修复
     def has_answer(self, question: Question) -> bool:
         """
         Return True iff this student has an answer for a question with the same
@@ -86,7 +87,6 @@ class Student:
         """
         Record this student's answer <answer> to the question <question>.
         """
-
         if question.id not in self._answers:
             self._answers[question.id] = answer
 
