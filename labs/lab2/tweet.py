@@ -218,6 +218,5 @@ if __name__ == '__main__':
 
     doctest.testmod()
 
-    # Optionally, check your work with python_ta!
-    # import python_ta
-    # python_ta.check_all(config={'extra-imports': ['datetime']})
+    import python_ta
+    python_ta.check_all(config={'extra-imports': ['datetime']})
