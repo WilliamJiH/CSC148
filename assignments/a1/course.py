@@ -86,15 +86,15 @@ class Student:
         """
         Record this student's answer <answer> to the question <question>.
         """
-        if question.id not in self._answers:
-            self._answers[question.id] = answer
+        self._answers[question.id] = answer
 
     def get_answer(self, question: Question) -> Optional[Answer]:
         """
         Return this student's answer to the question <question>. Return None if
         this student does not have an answer to <question>
         """
-        return self._answers[question.id] if self.has_answer(question) else None
+        return self._answers[
+            question.id] if question.id in self._answers else None
 
 
 class Course:
