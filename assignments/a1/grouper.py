@@ -171,7 +171,6 @@ class RandomGrouper(Grouper):
         """
         random.shuffle(course.students)
         sliced = slice_list(course.students, self.group_size)
-        random.shuffle(sliced)
         res = Grouping()
         if not sliced:
             res.add_group(Group([]))
