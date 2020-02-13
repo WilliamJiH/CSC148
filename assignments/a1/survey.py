@@ -26,8 +26,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Union, Dict, List
 from criterion import HomogeneousCriterion, InvalidAnswerError
 
-# 文件有bug
-
 if TYPE_CHECKING:
     from criterion import Criterion
     from grouper import Grouping
