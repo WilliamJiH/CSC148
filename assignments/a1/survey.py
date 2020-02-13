@@ -210,8 +210,8 @@ class NumericQuestion(Question):
         === Precondition ===
         <answer1> and <answer2> are both valid answers to this question
         """
-        similarity = 1.0 - (abs(answer1.content - answer2.content) / (
-                self._max - self._min))
+        similarity = 1.0 - (abs(answer1.content - answer2.content) /
+                            (self._max - self._min))
         return 1.0 if answer1.content == answer2.content and similarity > 1.0 \
             else similarity
 
@@ -306,13 +306,10 @@ class CheckboxQuestion(MultipleChoiceQuestion):
         An answer is valid iff its content is a non-empty list containing
         unique possible answers to this question.
         """
-        if isinstance(answer.content, list) and len(answer.content) > 0 and len(
-                answer.content) > len(set(answer.content)):
-            for ans in answer.content:
-                if ans not in self._options:
-                    return False
-            return True
-        return False
+        return isinstance(answer.content, list) and \
+               len(answer.content) > 0 and \
+               len(answer.content) == len(set(answer.content)) and \
+               all([ans in self._options for ans in answer.content])
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """
@@ -528,10 +525,9 @@ class Survey:
         """
         if not grouping.get_groups():
             return 0.0
-        scores = [self._criteria[question_id].score_answers(question, [
-            member.get_answer(question) for group in grouping.get_groups() for
-            member in group.get_members()]) for question_id, question in
-                  self._questions.items()]
+        scores = []
+        for group in grouping.get_groups():
+            scores.append(self.score_students(group.get_members()))
         return sum(scores) / len(scores)
 
 
