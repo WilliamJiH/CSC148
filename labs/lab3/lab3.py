@@ -190,5 +190,4 @@ if __name__ == '__main__':
     # import doctest
     # doctest.testmod()
 
-    # Uncomment the following line to run the number game.
-    # main()
+    main()
