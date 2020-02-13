@@ -6,6 +6,18 @@
       <sourceFolder url="file://$MODULE_DIR$/preps/prep2" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/preps/prep3" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/assignments/a0" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/preps/prep4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/labs/lab2" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/labs/lab3" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/labs/lab4" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/preps/prep5" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/assignments/a1" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/preps/prep6" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/preps/prep8" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/preps/prep9" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/preps/prep10" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/preps/prep11" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/labs/lab5" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.8 (CSC148)" jdkType="Python SDK" />
