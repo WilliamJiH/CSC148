@@ -24,8 +24,6 @@ import course
 import criterion
 import survey
 
-# 修改 load_survey 中的 survey_.set_criterion(questions[id_], weight) 到
-# survey_.set_criterion(weight. questions[id_])
 
 def _load_criterion(data: Dict[str, Any]) -> criterion.Criterion:
     """ Return a criterion created using the information in <data> """
@@ -54,7 +52,7 @@ def load_survey(data: Dict[str, Any]) -> survey.Survey:
     for id_, criterion_ in criteria.items():
         survey_.set_criterion(criterion_, questions[id_])
     for id_, weight in weights.items():
-        survey_.set_criterion(weight, questions[id_])
+        survey_.set_weight(weight, questions[id_])
 
     return survey_
 
