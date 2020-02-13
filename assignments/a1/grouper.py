@@ -50,7 +50,9 @@ def slice_list(lst: List[Any], n: int) -> List[List[Any]]:
     >>> slice_list(['a', 1, 6.0, False], 3) == [['a', 1, 6.0], [False]]
     True
     """
-    return [lst[i:i + n] for i in range(0, len(lst), n)]
+    if n > 0 and lst != []:
+        return [lst[i:i + n] for i in range(0, len(lst), n)]
+    return []
 
 
 def windows(lst: List[Any], n: int) -> List[List[Any]]:
@@ -67,7 +69,9 @@ def windows(lst: List[Any], n: int) -> List[List[Any]]:
     >>> windows(['a', 1, 6.0, False], 3) == [['a', 1, 6.0], [1, 6.0, False]]
     True
     """
-    return [lst[i:i + n] for i in range(len(lst) - n + 1)]
+    if n > 0 and lst != []:
+        return [lst[i:i + n] for i in range(len(lst) - n + 1)]
+    return []
 
 
 class Grouper:
@@ -322,6 +326,7 @@ class Group:
         """
         return self._members[:]
 
+
 # Grouping 需要修复.
 
 
@@ -355,8 +360,12 @@ class Grouping:
 
         You can choose the precise format of this string.
         """
-        return '\n'.join([member.name for group in self._groups for member in
-                          group.get_members()])
+        res = []
+        for group in self._groups:
+            for member in group.get_members():
+                res.append(member.name)
+            res.append('\n')
+        return ''.join(str(x) for x in res)
 
     def add_group(self, group: Group) -> bool:
         """
@@ -365,12 +374,15 @@ class Grouping:
         Iff adding <group> to this grouping would violate a representation
         invariant don't add it and return False instead.
         """
-        member1 = [member for grou in self._groups for member in
-                   grou.get_members()]
-        member2 = group.get_members()
-        check_ri = [member not in member1 for member in member2]
-        if group.__len__() > 0 and (all(check_ri) and check_ri[0] is True):
+        member1 = [member.id for sub_group in self._groups for member in
+                   sub_group.get_members()]
+        member2 = [member.id for member in group.get_members()]
+        check_ri = all(
+            [member_id not in member1 for member_id in member2]) and len(
+            group.get_members()) > 0
+        if check_ri:
             self._groups.append(group)
+            return True
         return False
 
     def get_groups(self) -> List[Group]:
