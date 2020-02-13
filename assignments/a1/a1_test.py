@@ -7,6 +7,8 @@ from criterion import *
 from survey import *
 from grouper import *
 
+''' For testing purpose only.'''
+
 
 def no_public(class_name, instance, public_attrs, public_methods):
     methods = class_name.__dict__
@@ -887,8 +889,8 @@ class TestGrouping(unittest.TestCase):
              for line in desire_line]))
         self.assertTrue(
             any([
-                    "Student3" in line and "Student4" in line and "Student5" in line
-                    for line in desire_line2]))
+                "Student3" in line and "Student4" in line and "Student5" in line
+                for line in desire_line2]))
 
     def test_add_1(self):
         student_comb = list(itertools.combinations(
@@ -900,7 +902,7 @@ class TestGrouping(unittest.TestCase):
             any([self.grouping.add_group(Group([])) for _ in range(10)]))
         self.assertFalse(any([self.grouping.add_group(
             Group([student_tuple[0], student_tuple[1]])) for student_tuple in
-                              student_comb]))
+            student_comb]))
 
     def test_add_2(self):
         group1_comb = list(itertools.combinations(
@@ -912,25 +914,25 @@ class TestGrouping(unittest.TestCase):
         self.assertTrue(self.grouping.add_group(self.group1))
         self.assertFalse(any([self.grouping.add_group(
             Group([student_tuple[0], student_tuple[1]])) for student_tuple in
-                              group1_comb]))
+            group1_comb]))
         self.assertTrue(self.grouping.add_group(self.group2))
         self.assertFalse(any([self.grouping.add_group(
             Group([student_tuple[0], student_tuple[1]])) for student_tuple in
-                              group2_comb]))
+            group2_comb]))
         self.assertFalse(any([self.grouping.add_group(
             Group([student_tuple[0], student_tuple[1]])) for student_tuple in
-                              group2_comb + group1_comb]))
+            group2_comb + group1_comb]))
         self.assertTrue(self.grouping.add_group(self.group3))
         self.assertFalse(any(
             [self.grouping.add_group(
                 Group([student_tuple[0], student_tuple[1]])) for student_tuple
-             in group3_comb]))
+                in group3_comb]))
         self.assertFalse(any([self.grouping.add_group(
             Group([student_tuple[0], student_tuple[1]])) for student_tuple in
-                              group3_comb + group2_comb]))
+            group3_comb + group2_comb]))
         self.assertFalse(any([self.grouping.add_group(
             Group([student_tuple[0], student_tuple[1]])) for student_tuple in
-                              group3_comb + group2_comb + group1_comb]))
+            group3_comb + group2_comb + group1_comb]))
 
     def test_get_group(self):
         self.grouping.add_group(self.group1)
