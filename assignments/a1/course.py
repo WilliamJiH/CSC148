@@ -73,7 +73,6 @@ class Student:
         """ Return the name of this student """
         return self.name
 
-    # Validate_answer 不对
     def has_answer(self, question: Question) -> bool:
         """
         Return True iff this student has an answer for a question with the same
