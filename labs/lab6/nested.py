@@ -5,7 +5,7 @@ Department of Computer Science,
 University of Toronto
 
 === Module Description ===
-This module contains a few nested list functions for you to practice recursion.
+This module contains a few nested list functions for you to practice recursion
 """
 from typing import Union, List
 
