@@ -26,7 +26,7 @@ well as a grouping (a group of groups).
 """
 from __future__ import annotations
 import random
-from typing import TYPE_CHECKING, List, Any
+from typing import TYPE_CHECKING, List, Any, Tuple
 from course import sort_students
 
 if TYPE_CHECKING:
@@ -135,9 +135,13 @@ class AlphaGrouper(Grouper):
         """
         sorted_students = sort_students(course.students, 'name')
         sliced = slice_list(sorted_students, self.group_size)
+        res = Grouping()
+        if not sliced:
+            res.add_group(Group([]))
+            return res
         for group in sliced:
-            Grouping.add_group(Grouping(), Group(group))
-        return Grouping()
+            res.add_group(Group(group))
+        return res
 
 
 class RandomGrouper(Grouper):
@@ -166,9 +170,24 @@ class RandomGrouper(Grouper):
         members of a group.
         """
         sliced = slice_list(course.students, self.group_size)
+        random.shuffle(sliced)
+        res = Grouping()
+        if not sliced:
+            res.add_group(Group([]))
+            return res
         for group in sliced:
-            Grouping.add_group(Grouping(), Group(group))
-        return Grouping()
+            res.add_group(Group(group))
+        return res
+
+
+def _get_pos(lst: List[Tuple[int, float]]) -> int:
+    """
+    Return the position of a given list in type List[Tuple]
+
+    >>> _get_pos([(1, 5.0), (2, 3.7), (3, 7.1)])
+    3
+    """
+    return max(lst, key=lambda x: x[1])[0]
 
 
 class GreedyGrouper(Grouper):
@@ -211,19 +230,23 @@ class GreedyGrouper(Grouper):
         required to make sure all students in <course> are members of a group.
         """
         students = list(course.get_students())
-        while not students:
-            potential_group = [students[0]]
-            students.pop(0)
-            while len(potential_group) <= self.group_size:
-                potential_group2 = [[potential_group, student] for student in
-                                    students]
-                potential_scores = [(a, survey.score_students(b)) for a, b in
-                                    enumerate(potential_group2)]
-                get_pos = max(potential_scores, key=lambda x: x[1])[0]
-                potential_group.append(potential_group2[get_pos][0])
-                potential_group2.remove(potential_group2[get_pos])
-            Grouping.add_group(Grouping(), Group(potential_group))
-        return Grouping()
+        res = Grouping()
+        first = students[0]
+        students.pop(0)
+        potential_group = [first]
+        scores = []
+        while students:
+            for index, student in enumerate(students):
+                potential_group.append(student)
+                scores.append((index, survey.score_students(potential_group)))
+                potential_group.remove(student)
+            pos = _get_pos(scores)
+            potential_group.append(students[pos])
+            students.remove(students[pos])
+            if len(potential_group) == self.group_size:
+                res.add_group(Group(potential_group))
+                potential_group = [first]
+        return res
 
 
 class WindowGrouper(Grouper):
@@ -269,8 +292,9 @@ class WindowGrouper(Grouper):
         new group.
         """
         students = list(course.get_students())
+        windowed_students = windows(students, self.group_size)
+        res = Grouping()
         while not students:
-            windowed_students = windows(students, self.group_size)
             potential_scores = [survey.score_students(x) for x in
                                 windowed_students]
             for i in range(len(potential_scores) - 1):
@@ -280,7 +304,10 @@ class WindowGrouper(Grouper):
                         students.remove(student)
                     break
             Grouping.add_group(Grouping(), Group(windowed_students[-1]))
-        return Grouping()
+        if students:
+            temp = [x for x in students]
+            res.add_group(Group(temp))
+        return res
 
 
 class Group:
@@ -325,9 +352,6 @@ class Group:
         shallow copy of the self._members attribute.
         """
         return self._members[:]
-
-
-# Grouping 需要修复.
 
 
 class Grouping:
