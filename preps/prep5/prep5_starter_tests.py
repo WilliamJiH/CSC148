@@ -92,6 +92,13 @@ def test_contains_doctest() -> None:
     assert not (4 in lst)
 
 
+def test_contains_empty_nodes_doctest() -> None:
+    """Test LinkedList.__contains__ on the given doctest."""
+    lst = LinkedList()
+    lst._first = None
+    assert 2 in lst
+
+
 def test_append_empty() -> None:
     """Test LinkedList.append on an empty list."""
     lst = LinkedList()

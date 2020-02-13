@@ -45,7 +45,7 @@ before in the readings or comprehension questions.
 from typing import Union, List
 
 
-def num_positives(obj: Union[int, List], n: int = 0) -> int:
+def num_positives(obj: Union[int, List]) -> int:
     """Return the number of positive integers in <obj>.
 
     Remember, 0 is *not* positive.
@@ -57,13 +57,15 @@ def num_positives(obj: Union[int, List], n: int = 0) -> int:
     >>> num_positives([1, -2, [-10, 2, [3], 4, -5], 4])
     5
     """
-    if isinstance(obj, int):
-        if obj > 0:
-            n += 1
-    else:
-        for item in obj:
-            n += num_positives(item)
-    return n
+    return int(obj > 0) if isinstance(obj, int) else sum(
+        [num_positives(i) for i in obj])
+    # if isinstance(obj, int):
+    #     if obj > 0:
+    #         n += 1
+    # else:
+    #     for item in obj:
+    #         n += num_positives(item)
+    # return n
 
 
 def nested_max(obj: Union[int, List]) -> int:
@@ -100,13 +102,15 @@ def max_length(obj: Union[int, List]) -> int:
     >>> max_length([1, 2, [1, 2, [3], 4, 5], 4])
     5
     """
-    if not isinstance(obj, list):
-        return 0
-    elif all(isinstance(sub, int) for sub in obj):
-        return len(obj)
-    else:
-        return max(max_length(sub) for sub in obj) if len(obj) < max(
-            max_length(sub) for sub in obj) else len(obj)
+    return 0 if isinstance(obj, int) else 0 if not obj else max(
+        max([max_length(i) for i in obj]), len(obj))
+    # if not isinstance(obj, list):
+    #     return 0
+    # elif all(isinstance(sub, int) for sub in obj):
+    #     return len(obj)
+    # else:
+    #     return max(max_length(sub) for sub in obj) if len(obj) < max(
+    #         max_length(sub) for sub in obj) else len(obj)
 
 
 if __name__ == '__main__':

@@ -225,9 +225,10 @@ class LinkedList:
         if index >= self.__len__():
             raise IndexError
         curr = self._first
-        for _ in range(index-1):
+        for _ in range(index - 1):
             curr = curr.next
         curr.item = item
+
 
 if __name__ == '__main__':
     # import python_ta
