@@ -89,21 +89,15 @@ class HomogeneousCriterion(Criterion):
         === Precondition ===
         len(answers) > 0
         """
-        if len(answers) == 1 and question.validate_answer(answers[0]):
+        if len(answers) == 1 and answers[0].is_valid(question):
             return 1.0
-        elif len(answers) > 1 and (all(
-                [question.validate_answer(answer) for answer in answers]) and
-                                   question.validate_answer(answers[0])):
-            scores = []
-            times = 0
-            for i in range(len(answers)):
-                for j in range(i + 1, len(answers) - 1):
-                    times += 1
-                    scores.append(question.get_similarity(answers[i],
-                                                          answers[j]))
-            return sum(scores) / times
-        else:
+        elif not all([ans.is_valid(question) for ans in answers]):
             raise InvalidAnswerError
+        scores = []
+        for i in range(0, len(answers) - 1):
+            for j in range(i + 1, len(answers)):
+                scores.append(question.get_similarity(answers[i], answers[j]))
+        return sum(scores) / len(scores)
 
 
 class HeterogeneousCriterion(HomogeneousCriterion):
@@ -134,11 +128,11 @@ class HeterogeneousCriterion(HomogeneousCriterion):
         === Precondition ===
         len(answers) > 0
         """
-        try:
-            s = HomogeneousCriterion.score_answers(self, question, answers)
-            return 1.0 - s
-        except InvalidAnswerError:
+        if len(answers) == 1 and answers[0].is_valid(question):
+            return 0.0
+        elif not all([ans.is_valid(question) for ans in answers]):
             raise InvalidAnswerError
+        return 1.0 - HomogeneousCriterion.score_answers(self, question, answers)
 
 
 class LonelyMemberCriterion(Criterion):
@@ -168,7 +162,18 @@ class LonelyMemberCriterion(Criterion):
         === Precondition ===
         len(answers) > 0
         """
-        return 0 if len(answers) == len(set(answers)) else 1.0
+        contents = [ans.content for ans in answers]
+        flag = False
+        for i in range(len(contents)):
+            if contents.count(contents[i]) == 1:
+                flag = True
+        check_valid = all([ans.is_valid(question) for ans in answers])
+        if flag and check_valid:
+            return 0.0
+        elif not flag and check_valid:
+            return 1.0
+        else:
+            raise InvalidAnswerError
 
 
 if __name__ == '__main__':
