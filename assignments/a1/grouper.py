@@ -169,6 +169,7 @@ class RandomGrouper(Grouper):
         members if that is required to make sure all students in <course> are
         members of a group.
         """
+        random.shuffle(course.students)
         sliced = slice_list(course.students, self.group_size)
         random.shuffle(sliced)
         res = Grouping()
