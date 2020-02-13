@@ -9,10 +9,10 @@ This module illustrates a simple unit test for our binary_search function.
 """
 from search import binary_search
 
-
-def test_search() -> None:
-    """Simple test for binary_search."""
-    assert binary_search(XXXX, XXXX) == XXXX
+#
+# def test_search() -> None:
+#     """Simple test for binary_search."""
+#     assert binary_search(XXXX, XXXX) == XXXX
 
 
 if __name__ == '__main__':
