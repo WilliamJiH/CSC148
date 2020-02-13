@@ -101,7 +101,8 @@ def answers() -> List[List[survey.Answer]]:
 
 
 @pytest.fixture
-def students_with_answers(students, questions, answers) -> List[course.Student]:
+def students_with_answers(students, questions,
+                          answers) -> List[course.Student]:
     for i, student in enumerate(students):
         for j, question in enumerate(questions):
             student.set_answer(question, answers[j][i])
@@ -126,8 +127,8 @@ def survey_(questions, criteria, weights) -> survey.Survey:
     s = survey.Survey(questions)
     for i, question in enumerate(questions):
         if i:
-            s.set_weight(weights[i-1], question)
-        if len(questions)-1 != i:
+            s.set_weight(weights[i - 1], question)
+        if len(questions) - 1 != i:
             s.set_criterion(criteria[i], question)
     return s
 
