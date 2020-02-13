@@ -119,8 +119,7 @@ class Instructor:
         if certificate not in self._certificates:
             self._certificates.append(certificate)
             return True
-        else:
-            return False
+        return False
 
     def get_num_certificates(self) -> int:
         """Return the number of certificates held by this instructor.
