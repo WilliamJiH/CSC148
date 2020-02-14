@@ -414,7 +414,7 @@ class Survey:
         You can choose the precise format of this string.
         """
         return '\n'.join(
-            question.text for question_id, question in self._questions.items())
+            str(question) for question_id, question in self._questions.items())
 
     def get_questions(self) -> List[Question]:
         """ Return a list of all questions in this survey """
