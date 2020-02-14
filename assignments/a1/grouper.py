@@ -254,9 +254,15 @@ class GreedyGrouper(Grouper):
                 if student.id == pos:
                     students.remove(student)
                     break
-            if len(potential_group) == self.group_size and students:
+            if len(potential_group) == self.group_size:
                 res.add_group(Group(potential_group))
-                potential_group = [students[0]]
+                if students:
+                    potential_group = [students[0]]
+                    students.pop(0)
+                else:
+                    potential_group = []
+        if potential_group:
+            res.add_group(Group(potential_group))
         return res
 
 
