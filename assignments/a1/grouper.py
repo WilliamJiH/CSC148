@@ -180,16 +180,6 @@ class RandomGrouper(Grouper):
         return res
 
 
-def _get_pos(lst: List[Tuple[int, float]]) -> int:
-    """
-    Return the position of a given list in type List[Tuple]
-
-    >>> _get_pos([(1, 5.0), (2, 3.7), (3, 7.1)])
-    3
-    """
-    return max(lst, key=lambda x: x[1])[0]
-
-
 class GreedyGrouper(Grouper):
     """
     A grouper used to create a grouping of students according to their
@@ -204,6 +194,21 @@ class GreedyGrouper(Grouper):
     """
 
     group_size: int
+
+    def _get_pos(self, lst: List[Tuple[int, float]]) -> int:
+        """
+        Return the id of a given list in type List[Tuple]
+        """
+        var = self.__dict__
+        if not isinstance(var, list):
+            sorted_scores = sorted(lst, key=lambda x: x[1])
+            id_lst = [score[0] for score in sorted_scores]
+            score_lst = [score[1] for score in sorted_scores]
+            if score_lst.count(sorted_scores[-1][1]) > 1:
+                pos = min([id_lst[i] for i, x in enumerate(score_lst) if
+                           x == sorted_scores[-1][1]])
+                return pos
+            return id_lst[-1]
 
     def make_grouping(self, course: Course, survey: Survey) -> Grouping:
         """
@@ -231,21 +236,27 @@ class GreedyGrouper(Grouper):
         """
         students = list(course.get_students())
         res = Grouping()
-        first = students[0]
+        potential_group = [students[0]]
         students.pop(0)
-        potential_group = [first]
-        scores = []
         while students:
-            for index, student in enumerate(students):
+            scores = []
+            for student in students:
                 potential_group.append(student)
-                scores.append((index, survey.score_students(potential_group)))
+                scores.append(
+                    (student.id, survey.score_students(potential_group)))
                 potential_group.remove(student)
-            pos = _get_pos(scores)
-            potential_group.append(students[pos])
-            students.remove(students[pos])
-            if len(potential_group) == self.group_size:
+            pos = self._get_pos(scores)
+            for student in students:
+                if student.id == pos:
+                    potential_group.append(student)
+                    break
+            for student in students:
+                if student.id == pos:
+                    students.remove(student)
+                    break
+            if len(potential_group) == self.group_size and students:
                 res.add_group(Group(potential_group))
-                potential_group = [first]
+                potential_group = [students[0]]
         return res
 
 
