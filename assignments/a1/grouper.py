@@ -313,10 +313,6 @@ class WindowGrouper(Grouper):
         potential_group = []
         res = Grouping()
         while students and windowed_students:
-            if students and len(windowed_students) == self.group_size:
-                for student in students:
-                    potential_group.append(student)
-                res.add_group(Group(potential_group))
             scores = [survey.score_students(pairs) for pairs in
                       windowed_students]
             i = 0
@@ -330,6 +326,10 @@ class WindowGrouper(Grouper):
                 potential_group = []
                 scores.clear()
                 windowed_students = windows(students, self.group_size)
+        if students:
+            for student in students:
+                potential_group.append(student)
+            res.add_group(Group(potential_group))
         return res
 
 
