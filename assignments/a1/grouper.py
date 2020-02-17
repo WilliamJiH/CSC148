@@ -27,11 +27,10 @@ well as a grouping (a group of groups).
 from __future__ import annotations
 import random
 from typing import TYPE_CHECKING, List, Any, Tuple
-from course import sort_students
+from course import Course, Student, sort_students
 
 if TYPE_CHECKING:
     from survey import Survey
-    from course import Course, Student
 
 
 def slice_list(lst: List[Any], n: int) -> List[List[Any]]:
@@ -209,6 +208,7 @@ class GreedyGrouper(Grouper):
                            x == sorted_scores[-1][1]])
                 return pos
             return id_lst[-1]
+        return -1
 
     def make_grouping(self, course: Course, survey: Survey) -> Grouping:
         """
@@ -310,20 +310,26 @@ class WindowGrouper(Grouper):
         """
         students = list(course.get_students())
         windowed_students = windows(students, self.group_size)
+        potential_group = []
         res = Grouping()
-        while not students:
-            potential_scores = [survey.score_students(x) for x in
-                                windowed_students]
-            for i in range(len(potential_scores) - 1):
-                if potential_scores[i] > potential_scores[i + 1]:
-                    Grouping.add_group(Grouping(), Group(windowed_students[i]))
-                    for student in windowed_students[i]:
-                        students.remove(student)
-                    break
-            Grouping.add_group(Grouping(), Group(windowed_students[-1]))
-        if students:
-            temp = [x for x in students]
-            res.add_group(Group(temp))
+        while students and windowed_students:
+            if students and len(windowed_students) == self.group_size:
+                for student in students:
+                    potential_group.append(student)
+                res.add_group(Group(potential_group))
+            scores = [survey.score_students(pairs) for pairs in
+                      windowed_students]
+            i = 0
+            while i < len(scores) - 1 and scores[i] < scores[i + 1]:
+                i += 1
+            if scores[-1] >= scores[0]:
+                potential_group = windowed_students[i]
+                res.add_group(Group(potential_group))
+                for student in potential_group:
+                    students.remove(student)
+                potential_group = []
+                scores.clear()
+                windowed_students = windows(students, self.group_size)
         return res
 
 
@@ -419,8 +425,8 @@ class Grouping:
                    sub_group.get_members()]
         member2 = [member.id for member in group.get_members()]
         check_ri = all(
-            [member_id not in member1 for member_id in member2]) and len(
-            group.get_members()) > 0
+            [member_id not in member1 for member_id in member2]) and \
+                   len(group.get_members()) > 0
         if check_ri:
             self._groups.append(group)
             return True
