@@ -31,7 +31,8 @@ def course_with_students(empty_course, students) -> course.Course:
 
 
 @pytest.fixture
-def course_with_duplicate_students(empty_course, duplicate_students) -> course.Course:
+def course_with_duplicate_students(empty_course,
+                                   duplicate_students) -> course.Course:
     empty_course.enroll_students(duplicate_students)
     return empty_course
 
@@ -41,7 +42,8 @@ def questions() -> List[survey.Question]:
     return [survey.MultipleChoiceQuestion(1, 'Which one?', ['a', 'b', 'c']),
             survey.NumericQuestion(2, 'How many digits?', 1, 5),
             survey.YesNoQuestion(3, 'Yes or No?'),
-            survey.CheckboxQuestion(4, 'Choose more than one!', ['a', 'b', 'c', 'd'])]
+            survey.CheckboxQuestion(4, 'Choose more than one!',
+                                    ['a', 'b', 'c', 'd'])]
 
 
 @pytest.fixture
@@ -69,7 +71,8 @@ def invalid_answers() -> List[List[survey.Answer]]:
 
 
 @pytest.fixture
-def students_with_valid_answers(students, questions, valid_answers) -> List[course.Student]:
+def students_with_valid_answers(students, questions, valid_answers) -> List[
+    course.Student]:
     for i, student in enumerate(students):
         for j, question in enumerate(questions):
             student.set_answer(question, valid_answers[j][i])
@@ -77,7 +80,8 @@ def students_with_valid_answers(students, questions, valid_answers) -> List[cour
 
 
 @pytest.fixture
-def students_with_invalid_answers(students, questions, invalid_answers) -> List[course.Student]:
+def students_with_invalid_answers(students, questions, invalid_answers) -> List[
+    course.Student]:
     for i, student in enumerate(students):
         for j, question in enumerate(questions):
             student.set_answer(question, invalid_answers[j][i])
@@ -85,13 +89,15 @@ def students_with_invalid_answers(students, questions, invalid_answers) -> List[
 
 
 @pytest.fixture
-def course_with_students_with_valid_answers(empty_course, students_with_answers):
+def course_with_students_with_valid_answers(empty_course,
+                                            students_with_valid_answers):
     empty_course.enroll_students(students_with_valid_answers)
     return empty_course
 
 
 @pytest.fixture
-def course_with_students_with_invalid_answers(empty_course, students_with_invalid_answers):
+def course_with_students_with_invalid_answers(empty_course,
+                                              students_with_invalid_answers):
     empty_course.enroll_students(students_with_invalid_answers)
     return empty_course
 
@@ -121,7 +127,8 @@ class TestStudent:
                 student.set_answer(question, answer)
                 assert student.get_answer(question) == answer
 
-    def test_get_answer(self, students_with_valid_answers, questions, valid_answers):
+    def test_get_answer(self, students_with_valid_answers, questions,
+                        valid_answers):
         for i, student in enumerate(students_with_valid_answers):
             for j, question in enumerate(questions):
                 assert student.get_answer(question) == valid_answers[j][i]
