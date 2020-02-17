@@ -162,8 +162,8 @@ class LonelyMemberCriterion(Criterion):
         """
         contents = [ans.content for ans in answers]
         flag = False
-        for i in range(len(contents)):
-            if contents.count(contents[i]) == 1:
+        for i in contents:
+            if contents.count(i) == 1:
                 flag = True
         check_valid = all([ans.is_valid(question) for ans in answers])
         if flag and check_valid:
