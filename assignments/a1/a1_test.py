@@ -1,13 +1,15 @@
 import itertools
-import random
 import unittest
-
 from course import *
 from criterion import *
 from survey import *
-from grouper import *
+import random
+from grouper import random as grouper_random
+from grouper import Group, Grouper, GreedyGrouper, AlphaGrouper, Grouping, \
+    WindowGrouper, RandomGrouper
+from grouper import slice_list, windows
 
-''' For testing purpose only.'''
+SEED_NUMBER = 770
 
 
 def no_public(class_name, instance, public_attrs, public_methods):
@@ -45,11 +47,15 @@ class TestStudent(unittest.TestCase):
 
     def test_get_answer_2(self):
         self.s1.set_answer(self.q1, self.a1)
-        self.assertTrue(self.s1.get_answer(self.q1) == self.a1,
-                        "Student has an answer for the Question get answer does not care about the validate answer")
+        self.assertTrue(
+            self.s1.get_answer(
+                self.q1) == self.a1,
+            "Student has an answer for the Question get answer does not care about the validate answer")
         self.s1.set_answer(self.q1, self.a2)
-        self.assertTrue(self.s1.get_answer(self.q1) == self.a2,
-                        "You should overwrite the existing answer when set is called more than once")
+        self.assertTrue(
+            self.s1.get_answer(
+                self.q1) == self.a2,
+            "You should overwrite the existing answer when set is called more than once")
         self.s1.set_answer(self.q1, self.a1)
         self.assertIsNone(self.s1.get_answer(self.q100),
                           "Student doesnt't have an answer for the question")
@@ -60,8 +66,10 @@ class TestStudent(unittest.TestCase):
 
     def test_has_answer_2(self):
         self.s1.set_answer(self.m3, self.a3)
-        self.assertTrue(self.s1.has_answer(self.m3),
-                        "Student has the answer for the question and the question is valid")
+        self.assertTrue(
+            self.s1.has_answer(
+                self.m3),
+            "Student has the answer for the question and the question is valid")
         self.s1.set_answer(self.m3, self.a1)
         self.assertFalse(self.s1.has_answer(self.m3),
                          "Student has the answer but answer is invalid")
@@ -108,8 +116,9 @@ class TestCourse(unittest.TestCase):
 
     def test_enroll_students(self):
         self.c1.enroll_students([self.s1, self.s2])
-        self.assertCountEqual(self.c1.students, [self.s1, self.s2],
-                              "You should add two students to the students of c1")
+        self.assertCountEqual(
+            self.c1.students, [
+                self.s1, self.s2], "You should add two students to the students of c1")
 
     def test_enroll_students_2(self):
         self.c1.enroll_students([self.s1, self.s2])
@@ -137,50 +146,74 @@ class TestCourse(unittest.TestCase):
         self.assertTrue(self.c1.all_answered(self.survey1),
                         "If the course has no students this should return True")
         self.c1.enroll_students([self.s1])
-        self.assertTrue(self.c1.all_answered(Survey([])),
-                        "If there is no question on the survey this should also return True")
-        self.assertTrue(self.c2.all_answered(Survey([])),
-                        "If there is no question in the survey this should also return True")
+        self.assertTrue(
+            self.c1.all_answered(
+                Survey(
+                    [])),
+            "If there is no question on the survey this should also return True")
+        self.assertTrue(
+            self.c2.all_answered(
+                Survey(
+                    [])),
+            "If there is no question in the survey this should also return True")
 
     def test_all_answered_survey_with_single_question(self):
         self.s1.set_answer(self.m3, self.a1)
         self.c1.enroll_students([self.s1])
-        self.assertFalse(self.c1.all_answered(self.survey1),
-                         "There is one student and he doesnot have a valid answer for the question")
+        self.assertFalse(
+            self.c1.all_answered(
+                self.survey1),
+            "There is one student and he doesnot have a valid answer for the question")
         self.c1.students = []
         self.s1.set_answer(self.m3, self.a3)
         self.c1.enroll_students([self.s1])
-        self.assertTrue(self.c1.all_answered(self.survey1),
-                        "There is one student and he has a valid an answer for the question")
+        self.assertTrue(
+            self.c1.all_answered(
+                self.survey1),
+            "There is one student and he has a valid an answer for the question")
         self.c1.enroll_students([self.s2])
-        self.assertFalse(self.c1.all_answered(self.survey1),
-                         "There are two students but one of them does not have an answer for the survey")
+        self.assertFalse(
+            self.c1.all_answered(
+                self.survey1),
+            "There are two students but one of them does not have an answer for the survey")
         self.c1.students[-1].set_answer(self.m3, self.a1)
-        self.assertFalse(self.c1.all_answered(self.survey1),
-                         "There are two students but one of them does not valid answer of the question")
+        self.assertFalse(
+            self.c1.all_answered(
+                self.survey1),
+            "There are two students but one of them does not valid answer of the question")
         self.c1.students[-1].set_answer(self.m3, self.a3)
-        self.assertTrue(self.c1.all_answered(self.survey1),
-                        "There are two students and both of them have validate answer of the survey")
+        self.assertTrue(
+            self.c1.all_answered(
+                self.survey1),
+            "There are two students and both of them have validate answer of the survey")
 
     def test_all_answered_survey_with_multiple_questions(self):
         numerical_sol = Answer(1)
         numerical_att = Answer(3)
         self.s1.set_answer(self.m3, self.a3)
         self.c1.enroll_students([self.s1])
-        self.assertFalse(self.c1.all_answered(self.survey2),
-                         "There is one student but he has only answer for the survey")
+        self.assertFalse(
+            self.c1.all_answered(
+                self.survey2),
+            "There is one student but he has only answer for the survey")
         self.c1.students[-1].set_answer(self.n3, numerical_att)
-        self.assertFalse(self.c1.all_answered(self.survey2),
-                         "There is one student but he does not have a valid answer for the second question of survey")
+        self.assertFalse(
+            self.c1.all_answered(
+                self.survey2),
+            "There is one student but he does not have a valid answer for the second question of survey")
         self.c1.students[-1].set_answer(self.n3, numerical_sol)
         self.assertTrue(self.c1.all_answered(self.survey2))
         self.s2.set_answer(self.m3, self.a3)
         self.c1.enroll_students([self.s2])
-        self.assertFalse(self.c1.all_answered(self.survey2),
-                         "There are two students but one of them does not have answer for the second question of the survey")
+        self.assertFalse(
+            self.c1.all_answered(
+                self.survey2),
+            "There are two students but one of them does not have answer for the second question of the survey")
         self.c1.students[-1].set_answer(self.n3, numerical_att)
-        self.assertFalse(self.c1.all_answered(self.survey2),
-                         "There are two students but one of them does not have a valid answer for the second question of survey")
+        self.assertFalse(
+            self.c1.all_answered(
+                self.survey2),
+            "There are two students but one of them does not have a valid answer for the second question of survey")
         self.c1.students[-1].set_answer(self.n3, numerical_sol)
         self.assertTrue(self.c1.all_answered(self.survey2))
 
@@ -191,12 +224,14 @@ class TestQuestion(unittest.TestCase):
         self.assertTrue(len(Question.__mro__) == 2)
 
     def test_SubclassInheritance(self):
-        subclasses = [MultipleChoiceQuestion, NumericQuestion, CheckboxQuestion,
-                      YesNoQuestion]
+        subclasses = [
+            MultipleChoiceQuestion,
+            NumericQuestion,
+            CheckboxQuestion,
+            YesNoQuestion]
         all_are_questions = all([Question in i.__mro__ for i in subclasses])
         at_least_one = any([len(i.__mro__) > 3 for i in subclasses])
         self.assertTrue(all_are_questions)
-        self.assertTrue(at_least_one)
 
 
 class TestMultipleChoiceQuestion(unittest.TestCase):
@@ -265,15 +300,16 @@ class TestNumericQuestion(unittest.TestCase):
         valid_sols = [Answer(i) for i in range(-2, 3)]
         self.assertTrue(
             all([self.n1.validate_answer(ans) for ans in valid_sols]))
-        invalid_sols = [Answer(i) for i in range(-10, -2)] + [Answer(j) for j in
-                                                              range(3, 10)]
+        invalid_sols = [Answer(i) for i in range(-10, -2)] + \
+            [Answer(j) for j in range(3, 10)]
         self.assertFalse(
             any([self.n1.validate_answer(ans) for ans in invalid_sols]))
         # self.assertFalse(any([self.n1.validate_answer(ans) for ans in [Answer(True), Answer(False)]]))
 
     def test_similarity(self):
         # 1 - (absolute_diff / (max_val - min_val))
-        exp = [1 - (abs(j - i) / 4) for i in range(-2, 3) for j in range(-2, 3)]
+        exp = [1 - (abs(j - i) / 4) for i in range(-2, 3)
+               for j in range(-2, 3)]
         act = [self.n1.get_similarity(Answer(i), Answer(j)) for i in
                range(-2, 3) for j in range(-2, 3)]
         self.assertTrue(all([exp[i] == act[i] for i in range(25)]))
@@ -341,8 +377,8 @@ class TestCheckboxQuestion(unittest.TestCase):
         self.assertFalse(any(act3), "Non unique")
         act4 = [self.y1.validate_answer(Answer([str(i)])) for i in range(10)]
         self.assertFalse(any(act4), "Non possible")
-        act5 = [self.y1.validate_answer(Answer([self.opts[i], str(i)])) for i in
-                range(len(self.opts))]
+        act5 = [self.y1.validate_answer(
+            Answer([self.opts[i], str(i)])) for i in range(len(self.opts))]
         self.assertFalse(any(act5), "Non possible")
 
     def test_similarity(self):
@@ -353,9 +389,16 @@ class TestCheckboxQuestion(unittest.TestCase):
         act2 = [self.y1.get_similarity(Answer([opt[0]]), Answer([opt[1]])) for
                 opt in permutations]
         self.assertTrue(all([i == 0.0 for i in act2]))
-        q = CheckboxQuestion(2, "Checkbox", ["O", "p", "t", "A", "B", "C", "D"])
-        act3 = [q.get_similarity(Answer(list(opt[0])), Answer(list(opt[1]))) for
-                opt in permutations]
+        q = CheckboxQuestion(
+            2, "Checkbox", [
+                "O", "p", "t", "A", "B", "C", "D"])
+        act3 = [
+            q.get_similarity(
+                Answer(
+                    list(
+                        opt[0])), Answer(
+                    list(
+                        opt[1]))) for opt in permutations]
         self.assertTrue(all([i == 0.6 for i in act3]))
 
 
@@ -370,7 +413,6 @@ class TestCriterion(unittest.TestCase):
         all_criterion = all([self.c in i.__mro__ for i in subclasses])
         self.assertTrue(all_criterion)
         at_least_one = any([len(i.__mro__) > 3 for i in subclasses])
-        self.assertTrue(at_least_one)
         no_init = all(["__init__" not in i.__mro__ for i in subclasses])
         self.assertTrue(no_init)
 
@@ -401,9 +443,8 @@ class TestHomogeneousCriterion(unittest.TestCase):
         self.assertTrue(all(
             [self.c.score_answers(self.q2, [Answer(num)]) == 1.0 for num in
              range(1, 6)]))
-        self.assertTrue(all(
-            [self.c.score_answers(self.q3, [Answer(boolean)]) == 1.0 for boolean
-             in [True, False]]))
+        self.assertTrue(all([self.c.score_answers(
+            self.q3, [Answer(boolean)]) == 1.0 for boolean in [True, False]]))
         self.assertTrue(all(
             [self.c.score_answers(self.q4, [Answer([opt])]) == 1.0 for opt in
              self.opts]))
@@ -413,18 +454,21 @@ class TestHomogeneousCriterion(unittest.TestCase):
                                               [Answer(choice) for choice in
                                                self.choices]), 0.0)
         self.assertEqual(
-            self.c.score_answers(self.q2, [Answer(num) for num in range(1, 6)]),
-            0.5)
+            self.c.score_answers(
+                self.q2, [
+                    Answer(num) for num in range(
+                        1, 6)]), 0.5)
         self.assertEqual(self.c.score_answers(self.q3,
                                               [Answer(boolean) for boolean in
                                                [True, False]]), 0.0)
         self.assertEqual(
-            self.c.score_answers(self.q4, [Answer([opt]) for opt in self.opts]),
-            0.0)
+            self.c.score_answers(
+                self.q4, [
+                    Answer(
+                        [opt]) for opt in self.opts]), 0.0)
 
     def test_score_single_element_invalid(self):
-        invalid_args = list(range(1, 6)) + [True, False] + [[opt] for opt in
-                                                            self.opts]
+        invalid_args = list(range(1, 6)) + [[opt] for opt in self.opts]
         for invalid_arg in invalid_args:
             self.assertRaises(InvalidAnswerError,
                               HomogeneousCriterion.score_answers, self.c,
@@ -443,7 +487,7 @@ class TestHomogeneousCriterion(unittest.TestCase):
                               HomogeneousCriterion.score_answers, self.c,
                               self.q3,
                               [Answer(invalid_arg)])
-        invalid_args4 = self.choices + list(range(1, 6)) + [True, False]
+        invalid_args4 = self.choices + list(range(1, 6)) + [False]
         for invalid_arg in invalid_args4:
             self.assertRaises(InvalidAnswerError,
                               HomogeneousCriterion.score_answers, self.c,
@@ -478,7 +522,10 @@ class TestHomogeneousCriterion(unittest.TestCase):
             "1 / 4C2 = 1 / 6")
         answer_with_two_set_duplicate = answer_copy[:2] + answer_copy[:2]
         self.assertEqual(
-            self.c.score_answers(self.q1, answer_with_two_set_duplicate), 2 / 6,
+            self.c.score_answers(
+                self.q1,
+                answer_with_two_set_duplicate),
+            2 / 6,
             "2 / 4C2 = 1 / 3")
         answer_with_three_duplicate = [answer_copy[0]] * 3 + answer_copy[1: 2]
         self.assertEqual(
@@ -493,17 +540,26 @@ class TestHomogeneousCriterion(unittest.TestCase):
         answer_copy = answers[:]
         answer_with_one_duplicate = answer_copy[:4] + answer_copy[0:1]
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_one_duplicate), 0.6,
+            self.c.score_answers(
+                self.q2,
+                answer_with_one_duplicate),
+            0.6,
             " sum of [0.75, 0.5, 0.25, 1.0, 0.75, 0.5, 0.75, 0.75, 0.5, 0.25] / 10")
         answer_with_two_set_duplicate = answer_copy[:2] + answer_copy[:2] + [
             answers[1]]
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_two_set_duplicate), 0.85,
+            self.c.score_answers(
+                self.q2,
+                answer_with_two_set_duplicate),
+            0.85,
             " sum of [0.75, 1.0, 0.75, 0.75, 0.75, 1.0, 1.0, 0.75, 0.75, 1.0] / 10")
         answer_with_three_duplicates = [answer_copy[0]] * 3 + [
             answer_copy[1]] * 2
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_three_duplicates), 0.85,
+            self.c.score_answers(
+                self.q2,
+                answer_with_three_duplicates),
+            0.85,
             " sum of [1.0, 1.0, 0.75, 0.75, 1.0, 0.75, 0.75, 0.75, 0.75, 1.0] / 10")
         answer_with_four_duplicates = [answer_copy[0]] * 4 + [answer_copy[-1]]
         self.assertEqual(
@@ -536,7 +592,10 @@ class TestHomogeneousCriterion(unittest.TestCase):
             "1 / 4C2 = 1 / 6")
         answer_with_two_set_duplicate = answer_copy[:2] + answer_copy[:2]
         self.assertEqual(
-            self.c.score_answers(self.q4, answer_with_two_set_duplicate), 2 / 6,
+            self.c.score_answers(
+                self.q4,
+                answer_with_two_set_duplicate),
+            2 / 6,
             "2 / 4C2 = 1 / 3")
         answer_with_three_duplicate = [answer_copy[0]] * 3 + answer_copy[1: 2]
         self.assertEqual(
@@ -561,7 +620,10 @@ class TestHomogeneousCriterion(unittest.TestCase):
             "sum of [0.6, 1.0, 0.6, 0.6, 1.0, 0.6]")
         answer_with_three_duplicate = [answer_copy[0]] * 3 + answer_copy[1: 2]
         self.assertEqual(
-            self.c.score_answers(self.q4, answer_with_three_duplicate), 4.8 / 6,
+            self.c.score_answers(
+                self.q4,
+                answer_with_three_duplicate),
+            4.8 / 6,
             "sum of [1.0, 1.0, 0.6, 1.0, 0.6, 0.6] / 6")
         answer_with_four_duplicate = [answer_copy[0]] * 4
         self.assertEqual(
@@ -582,14 +644,18 @@ class TestHeterogeneousCriterion(TestHomogeneousCriterion):
                                               [Answer(choice) for choice in
                                                self.choices]), 1.0)
         self.assertEqual(
-            self.c.score_answers(self.q2, [Answer(num) for num in range(1, 6)]),
-            0.5)
+            self.c.score_answers(
+                self.q2, [
+                    Answer(num) for num in range(
+                        1, 6)]), 0.5)
         self.assertEqual(self.c.score_answers(self.q3,
                                               [Answer(boolean) for boolean in
                                                [True, False]]), 1.0)
         self.assertEqual(
-            self.c.score_answers(self.q4, [Answer([opt]) for opt in self.opts]),
-            1.0)
+            self.c.score_answers(
+                self.q4, [
+                    Answer(
+                        [opt]) for opt in self.opts]), 1.0)
 
     def test_score_single_element(self):
         self.assertTrue(all(
@@ -598,9 +664,8 @@ class TestHeterogeneousCriterion(TestHomogeneousCriterion):
         self.assertTrue(all(
             [self.c.score_answers(self.q2, [Answer(num)]) == 0.0 for num in
              range(1, 6)]))
-        self.assertTrue(all(
-            [self.c.score_answers(self.q3, [Answer(boolean)]) == 0.0 for boolean
-             in [True, False]]))
+        self.assertTrue(all([self.c.score_answers(
+            self.q3, [Answer(boolean)]) == 0.0 for boolean in [True, False]]))
         self.assertTrue(all(
             [self.c.score_answers(self.q4, [Answer([opt])]) == 0.0 for opt in
              self.opts]))
@@ -671,27 +736,40 @@ class TestHeterogeneousCriterion(TestHomogeneousCriterion):
         answer_copy = answers[:]
         answer_with_one_duplicate = answer_copy[:4] + answer_copy[0:1]
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_one_duplicate), 1 - 0.6,
+            self.c.score_answers(
+                self.q2,
+                answer_with_one_duplicate),
+            1 - 0.6,
             "1 - sum of [0.75, 0.5, 0.25, 1.0, 0.75, 0.5, 0.75, 0.75, 0.5, 0.25] / 10")
         answer_with_two_set_duplicate = answer_copy[:2] + answer_copy[:2] + [
             answers[1]]
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_two_set_duplicate),
+            self.c.score_answers(
+                self.q2,
+                answer_with_two_set_duplicate),
             1 - 0.85,
             "1 - sum of [0.75, 1.0, 0.75, 0.75, 0.75, 1.0, 1.0, 0.75, 0.75, 1.0] / 10")
         answer_with_three_duplicates = [answer_copy[0]] * 3 + [
             answer_copy[1]] * 2
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_three_duplicates),
+            self.c.score_answers(
+                self.q2,
+                answer_with_three_duplicates),
             1 - 0.85,
             "1 - sum of [1.0, 1.0, 0.75, 0.75, 1.0, 0.75, 0.75, 0.75, 0.75, 1.0] / 10")
         answer_with_four_duplicates = [answer_copy[0]] * 4 + [answer_copy[-1]]
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_four_duplicates), 1 - 0.6,
+            self.c.score_answers(
+                self.q2,
+                answer_with_four_duplicates),
+            1 - 0.6,
             "1 - sum of [1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0] / 10")
         answer_with_all_duplicates = [answer_copy[0]] * 5
         self.assertEqual(
-            self.c.score_answers(self.q2, answer_with_all_duplicates), 0.0,
+            self.c.score_answers(
+                self.q2,
+                answer_with_all_duplicates),
+            0.0,
             "1 - sum of [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] / 10")
 
     def test_score_with_yes_no(self):
@@ -722,14 +800,18 @@ class TestLonelyMemberCriterion(TestHeterogeneousCriterion):
                                               [Answer(choice) for choice in
                                                self.choices]), 0.0)
         self.assertEqual(
-            self.c.score_answers(self.q2, [Answer(num) for num in range(1, 6)]),
-            0.0)
+            self.c.score_answers(
+                self.q2, [
+                    Answer(num) for num in range(
+                        1, 6)]), 0.0)
         self.assertEqual(self.c.score_answers(self.q3,
                                               [Answer(boolean) for boolean in
                                                [True, False]]), 0.0)
         self.assertEqual(
-            self.c.score_answers(self.q4, [Answer([opt]) for opt in self.opts]),
-            0.0)
+            self.c.score_answers(
+                self.q4, [
+                    Answer(
+                        [opt]) for opt in self.opts]), 0.0)
 
     def test_score_with_checkbox(self):
         answers = [Answer([i]) for i in self.opts]
@@ -926,7 +1008,7 @@ class TestGrouping(unittest.TestCase):
         self.assertFalse(any(
             [self.grouping.add_group(
                 Group([student_tuple[0], student_tuple[1]])) for student_tuple
-                in group3_comb]))
+             in group3_comb]))
         self.assertFalse(any([self.grouping.add_group(
             Group([student_tuple[0], student_tuple[1]])) for student_tuple in
             group3_comb + group2_comb]))
@@ -1046,8 +1128,12 @@ class TestSurvey(unittest.TestCase):
         self.survey.set_weight(4, self.q3)
         self.set_answer(self.q3, [Answer(boolean) for boolean in
                                   [True, False, True, False]])
-        self.assertAlmostEqual(self.survey.score_students(self.students), 8 / 6,
-                               3, "(0 + (2/3) * 4) / 2")
+        self.assertAlmostEqual(
+            self.survey.score_students(
+                self.students),
+            8 / 6,
+            3,
+            "(0 + (2/3) * 4) / 2")
 
     def test_score_grouping_single_member(self):
         self.assertEqual(self.survey.score_grouping(Grouping()), 0)
@@ -1205,7 +1291,7 @@ class TestAlphaGrouper(TestGrouper):
 
     def test_make_grouping(self):
         course = Course("C1")
-        course.enroll_students(self.students[::-1])
+        course.enroll_students(self.students)
         grouping = self.grouper.make_grouping(course, Survey([]))
         self.assertGrouplen(grouping, 2)
         self.assertSubGrouplen(grouping.get_groups(), [2, 2])
@@ -1243,38 +1329,52 @@ class TestAlphaGrouper(TestGrouper):
 class TestRandomGrouper(TestGrouper):
     def setUp(self) -> None:
         super().setUp()
+        random.seed(SEED_NUMBER)
         self.grouper = RandomGrouper(2)
 
     def tearDown(self) -> None:
         super().tearDown()
+        random.seed(SEED_NUMBER)
         self.grouper = RandomGrouper(2)
 
     def test_make_grouping(self):
         course = Course("C1")
-        course.enroll_students(self.students[::-1])
+        self.students.sort(key=lambda x: x.id)
+        course.enroll_students(self.students)
+        copy_students = self.students[:]
+        random.shuffle(copy_students)
+        grouper_random.seed(SEED_NUMBER)
         grouping = self.grouper.make_grouping(course, Survey([]))
         self.assertGrouplen(grouping, 2)
         self.assertSubGrouplen(grouping.get_groups(), [2, 2])
         student_names = [student.name for group in grouping.get_groups() for
                          student in group.get_members()]
-        exp = [student.name for student in self.students]
+        exp = [student.name for student in copy_students]
         self.assertCountEqual(student_names, exp)
 
     def test_make_grouping_2(self):
         course = Course("C1")
-        course.enroll_students(self.students[::-1])
+        self.students.sort(key=lambda x: x.id)
+        course.enroll_students(self.students)
+        copy_students = self.students[:]
+        random.shuffle(copy_students)
+        grouper_random.seed(SEED_NUMBER)
         self.grouper.group_size = 3
         grouping = self.grouper.make_grouping(course, Survey([]))
         self.assertGrouplen(grouping, 2)
         self.assertSubGrouplen(grouping.get_groups(), [3, 1])
         student_names = [student.name for group in grouping.get_groups() for
                          student in group.get_members()]
-        exp = [student.name for student in self.students]
+        exp = [student.name for student in copy_students]
         self.assertCountEqual(student_names, exp)
 
     def test_make_grouping_3(self):
         course = Course("C1")
-        course.enroll_students(self.students[::-1])
+        self.students.sort(key=lambda x: x.id)
+        course.enroll_students(self.students)
+        copy_students = self.students[:]
+        random.shuffle(copy_students)
+        grouper_random.seed(SEED_NUMBER)
         for i in range(4, 10):
             self.grouper.group_size = i
             grouping = self.grouper.make_grouping(course, Survey([]))
@@ -1282,7 +1382,7 @@ class TestRandomGrouper(TestGrouper):
             self.assertSubGrouplen(grouping.get_groups(), [4])
             student_names = [student.name for group in grouping.get_groups() for
                              student in group.get_members()]
-            exp = [student.name for student in self.students]
+            exp = [student.name for student in copy_students]
             self.assertCountEqual(student_names, exp)
 
 
