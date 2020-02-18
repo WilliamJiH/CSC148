@@ -196,7 +196,8 @@ class GreedyGrouper(Grouper):
 
     def _get_pos(self, lst: List[Tuple[int, float]]) -> int:
         """
-        Return the id of a given list in type List[Tuple]
+        Return the index + 1 of the integer which is in the list with the
+        largest float in the corresponding list.
         """
         var = self.__dict__
         if not isinstance(var, list):
@@ -316,16 +317,22 @@ class WindowGrouper(Grouper):
             scores = [survey.score_students(pairs) for pairs in
                       windowed_students]
             i = 0
-            while i < len(scores) - 1 and scores[i] < scores[i + 1]:
+            while i < len(students) - self.group_size - len(res) and \
+                    scores[i] < scores[i + 1]:
                 i += 1
-            if scores[-1] >= scores[0]:
+            if i == len(students) - self.group_size - len(res) - 1 and \
+                    scores[-1] >= scores[0]:
                 potential_group = windowed_students[i]
                 res.add_group(Group(potential_group))
-                for student in potential_group:
-                    students.remove(student)
-                potential_group = []
-                scores.clear()
-                windowed_students = windows(students, self.group_size)
+            else:
+                potential_group = windowed_students[i]
+                res.add_group(Group(potential_group))
+
+            for student in potential_group:
+                students.remove(student)
+            potential_group = []
+            scores.clear()
+            windowed_students = windows(students, self.group_size)
         if students:
             for student in students:
                 potential_group.append(student)
