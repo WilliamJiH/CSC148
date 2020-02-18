@@ -181,8 +181,9 @@ class NumericQuestion(Question):
         Return True iff the content of <answer> is an integer between the
         minimum and maximum (inclusive) possible answers to this question.
         """
-        return isinstance(answer.content,
-                          int) and self._min <= answer.content <= self._max
+        return not isinstance(answer.content, bool) and \
+               isinstance(answer.content, int) and \
+               self._min <= answer.content <= self._max
 
     def get_similarity(self, answer1: Answer, answer2: Answer) -> float:
         """

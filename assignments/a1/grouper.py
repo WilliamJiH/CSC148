@@ -317,22 +317,20 @@ class WindowGrouper(Grouper):
             scores = [survey.score_students(pairs) for pairs in
                       windowed_students]
             i = 0
-            while i < len(students) - self.group_size - len(res) and \
-                    scores[i] < scores[i + 1]:
+            while i < len(windowed_students) - 1 and scores[i] < scores[i + 1]:
                 i += 1
-            if i == len(students) - self.group_size - len(res) - 1 and \
-                    scores[-1] >= scores[0]:
-                potential_group = windowed_students[i]
+            if i == len(windowed_students) - 1 and scores[-1] >= scores[0]:
+                potential_group = windowed_students[-1]
                 res.add_group(Group(potential_group))
             else:
                 potential_group = windowed_students[i]
                 res.add_group(Group(potential_group))
-
             for student in potential_group:
                 students.remove(student)
             potential_group = []
             scores.clear()
             windowed_students = windows(students, self.group_size)
+
         if students:
             for student in students:
                 potential_group.append(student)
