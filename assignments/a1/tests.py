@@ -60,6 +60,26 @@ def greedy_grouping_2(students_with_valid_answers) -> grouper.Grouping:
 
 
 @pytest.fixture
+def window_grouping(students_with_valid_answers) -> grouper.Grouping:
+    grouping = grouper.Grouping()
+    grouping.add_group(grouper.Group([students_with_valid_answers[0],
+                                      students_with_valid_answers[1]]))
+    grouping.add_group(grouper.Group([students_with_valid_answers[2],
+                                      students_with_valid_answers[3]]))
+    return grouping
+
+
+@pytest.fixture
+def window_grouping_2(students_with_valid_answers) -> grouper.Grouping:
+    grouping = grouper.Grouping()
+    grouping.add_group(grouper.Group([students_with_valid_answers[1],
+                                      students_with_valid_answers[2],
+                                      students_with_valid_answers[3]]))
+    grouping.add_group(grouper.Group([students_with_valid_answers[0]]))
+    return grouping
+
+
+@pytest.fixture
 def alpha_grouping(students_with_valid_answers) -> grouper.Grouping:
     grouping = grouper.Grouping()
     grouping.add_group(grouper.Group([students_with_valid_answers[0],
@@ -625,17 +645,17 @@ class TestRandomGrouper:
 class TestGreedyGrouper:
     def test__get_pos(self):
         s = grouper.GreedyGrouper(2)
-        lst = [[1, 1.0], [2, 3.5], [3, 0.9]]
+        lst = [(1, 1.0), (2, 3.5), (3, 0.9)]
         assert s._get_pos(lst) == 2
 
     def test__get_pos_2(self):
         s = grouper.GreedyGrouper(2)
-        lst = [[1, 1.0], [2, 0.5], [3, 10]]
+        lst = [(1, 1.0), (2, 0.5), (3, 10)]
         assert s._get_pos(lst) == 3
 
     def test__get_pos_3(self):
         s = grouper.GreedyGrouper(2)
-        lst = [[1, 0.1]]
+        lst = [(1, 0.1)]
         assert s._get_pos(lst) == 1
 
     def test_make_grouping(self, course_with_students_with_valid_answers,
@@ -653,6 +673,24 @@ class TestGreedyGrouper:
             course_with_students_with_valid_answers,
             survey_)
         compare_groupings(grouping1, greedy_grouping_2)
+
+
+class TestWindowGrouper:
+    def test_make_grouping(self, course_with_students_with_valid_answers,
+                           window_grouping, survey_):
+        grouper_ = grouper.WindowGrouper(2)
+        grouping = grouper_.make_grouping(
+            course_with_students_with_valid_answers,
+            survey_)
+        compare_groupings(grouping, window_grouping)
+
+    def test_make_grouping_2(self, course_with_students_with_valid_answers,
+                             window_grouping_2, survey_):
+        grouper_ = grouper.WindowGrouper(3)
+        grouping = grouper_.make_grouping(
+            course_with_students_with_valid_answers,
+            survey_)
+        compare_groupings(window_grouping_2, grouping)
 
 
 class TestGrouping:
