@@ -177,10 +177,11 @@ class Tree:
         preorder = []
         if self.is_empty():
             return False
-        preorder.append(self._root)
+        preorder.append(self._root == item)
         for subtree in self._subtrees:
-            preorder.append(subtree._root)
-        return item in preorder
+            preorder.append(subtree.__contains__(item))
+        return True in preorder
+    
 
 
 if __name__ == '__main__':
