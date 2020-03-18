@@ -204,18 +204,41 @@ class Block:
 
         If this Block's level is <max_depth>, do nothing. If this block has
         children, do nothing.
-        
+
         Return True iff the smash was performed.
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if self.smashable():
+            self.children = [
+                Block(self._children_positions()[0], self._child_size(),
+                      random.choice(COLOUR_LIST), self.level + 1,
+                      self.max_depth),
+                Block(self._children_positions()[1], self._child_size(),
+                      random.choice(COLOUR_LIST), self.level + 1,
+                      self.max_depth),
+                Block(self._children_positions()[2], self._child_size(),
+                      random.choice(COLOUR_LIST), self.level + 1,
+                      self.max_depth),
+                Block(self._children_positions()[3], self._child_size(),
+                      random.choice(COLOUR_LIST), self.level + 1,
+                      self.max_depth)]
+            self.colour = None
+            for child in self.children:
+                ran_num = random.random()
+                if ran_num < math.exp(-0.25 * child.level):
+                    child.smash()
+                else:
+                    ran_colour_num = random.randint(0, 3)
+                    child.colour = COLOUR_LIST[ran_colour_num]
+            return True
+        else:
+            return False
 
     def swap(self, direction: int) -> bool:
         """Swap the child Blocks of this Block.
 
         If this Block has no children, do nothing. Otherwise, if <direction> is
         1, swap vertically. If <direction> is 0, swap horizontally.
-        
+
         Return True iff the swap was performed.
 
         Precondition: <direction> is either 0 or 1
@@ -228,7 +251,7 @@ class Block:
 
         If this Block has no children, do nothing. If <direction> is 1, rotate
         clockwise. If <direction> is 3, rotate counter-clockwise.
-        
+
         Return True iff the rotate was performed.
 
         Precondition: <direction> is either 1 or 3.
