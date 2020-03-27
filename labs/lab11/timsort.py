@@ -73,17 +73,18 @@ def find_runs(lst: list) -> List[Tuple[int, int]]:
     [(0, 1), (1, 2), (2, 4)]
     """
     runs = []
-
-    # Keep track of the start and end points of a run.
-    run_start = 0
-    run_end = 1
-    while run_end < len(lst):
-        # How can you tell if a run should continue?
-        #   (When you do, update run_end.)
-
-        # How can you tell if a run is over?
-        #   (When you do, update runs, run_start, and run_end.)
-        pass
+    break_indexes = []
+    for i in range(1, len(lst)):
+        if lst[i] < lst[i - 1]:
+            break_indexes.append(i)
+    if len(break_indexes) > 1 and break_indexes[0] != 0 and break_indexes[-1] != len(lst):
+        break_indexes.insert(0, 0)
+        break_indexes.append(len(lst))
+    else:
+        runs.append((0, len(lst)))
+    for i in range(len(break_indexes) - 1):
+        runs.append((break_indexes[i], break_indexes[i + 1]))
+    return runs
 
 
 ###############################################################################
@@ -106,13 +107,13 @@ def timsort(lst: list) -> None:
     [-1, 1, 2, 3, 4, 5, 7, 10]
     """
     runs = find_runs(lst)
-
-    # Treat runs as a stack and repeatedly merge the top two runs
-    # When the loop ends, the only run should be the whole list.
-    # HINT: you should be able to use the "_merge" function provided
-    # in this file.
-
-    pass
+    while len(runs) > 1:
+        run1 = runs.pop()
+        run2 = runs.pop()
+        _merge(lst, run2[0], run2[1], run1[1])
+        new_runs = find_runs(lst)
+        for t in new_runs:
+            runs.append(t)
 
 
 ###############################################################################
@@ -147,10 +148,19 @@ def find_runs2(lst: list) -> List[Tuple[int, int]]:
     >>> lst2  # The -1 and 3 are switched
     [1, 4, 7, 10, 2, 5, -1, 3]
     """
-    # Hint: this is very similar to find_runs, except
-    # you'll need to keep track of whether the "current run"
-    # is ascending or descending.
-    pass
+    runs = []
+    break_indexes = []
+    for i in range(1, len(lst)):
+        if lst[i] < lst[i - 1]:
+            break_indexes.append(i)
+    if len(break_indexes) > 1 and break_indexes[0] != 0 and break_indexes[-1] != len(lst):
+        break_indexes.insert(0, 0)
+        break_indexes.append(len(lst))
+    else:
+        runs.append((0, len(lst)))
+    for i in range(len(break_indexes) - 1):
+        runs.append((break_indexes[i], break_indexes[i + 1]))
+    return runs
 
 
 ###############################################################################
@@ -165,7 +175,20 @@ def find_runs3(lst: list) -> List[Tuple[int, int]]:
 
     Precondition: lst is non-empty
     """
-    pass
+    runs = []
+    break_indexes = []
+    while len(runs) >= MIN_RUN:
+        for i in range(1, len(lst)):
+            if lst[i] < lst[i - 1]:
+                break_indexes.append(i)
+        if len(break_indexes) > 1 and break_indexes[0] != 0 and break_indexes[-1] != len(lst):
+            break_indexes.insert(0, 0)
+            break_indexes.append(len(lst))
+        else:
+            runs.append((0, len(lst)))
+        for i in range(len(break_indexes) - 1):
+            runs.append((break_indexes[i], break_indexes[i + 1]))
+        return runs
 
 
 def insertion_sort(lst: list, start: int, end: int) -> None:
@@ -187,7 +210,7 @@ def insertion_sort(lst: list, start: int, end: int) -> None:
             lst[left + 1:i + 1] = lst[left:i]
             lst[left] = num
         else:
-            lst[right+1:i+1] = lst[right:i]
+            lst[right + 1:i + 1] = lst[right:i]
             lst[right] = num
 
 
@@ -199,7 +222,33 @@ def _merge2(lst: list, start: int, mid: int, end: int) -> None:
 
     Precondition: lst[start:mid] and lst[mid:end] are sorted.
     """
-    pass
+    len1 = mid - start + 1
+    len2 = end - mid
+    left = []
+    right = []
+    for i in range(0, len1):
+        left.append(lst[start + i])
+    for i in range(0, len2):
+        right.append(lst[mid + 1 + i])
+    index1 = 0
+    index2 = 0
+    begin = start
+    while index1 < len1 and index2 < len2:
+        if left[index1] <= right[index2]:
+            lst[begin] = left[index1]
+            index1 += 1
+        else:
+            lst[begin] = right[index2]
+            index2 += 1
+        begin += 1
+    while index1 < len1:
+        lst[begin] = left[index1]
+        begin += 1
+        index1 += 1
+    while index2 < len2:
+        lst[begin] = right[index2]
+        begin += 1
+        index2 += 1
 
 
 ###############################################################################
@@ -208,9 +257,22 @@ def _merge2(lst: list, start: int, mid: int, end: int) -> None:
 def timsort2(lst: list) -> None:
     """Sort the given list using the version of timsort from Task 6.
     """
-    pass
+    runs = find_runs3(lst)
+    while len(runs) >= 3:
+        a = runs.pop()
+        b = runs.pop()
+        c = runs.pop()
+        if len(b) > len(c) and len(a) > len(b) + len(c):
+            new_runs = find_runs3(lst)
+            for t in new_runs:
+                runs.append(t)
+        elif len(b) <= len(c):
+            _merge2(lst, c[0], c[1], b[1])
+        else:
+            _merge2(lst, c[0], a[0], a[1])
 
 
 # if __name__ == '__main__':
 #     import doctest
+#
 #     doctest.testmod()
