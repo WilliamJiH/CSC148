@@ -46,9 +46,17 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
     objects as the length of <smart_players>. The difficulty levels in
     <smart_players> should be applied to each SmartPlayer object, in order.
     """
-    # TODO: Implement Me
-    goals = generate_goals(1)  # FIXME
-    return [HumanPlayer(0, goals[0])]  # FIXME
+    res = []
+    total_players = num_human + num_random + len(smart_players)
+    goal = generate_goals(total_players)
+    for i in range(0, total_players):
+        if i < num_human:
+            res.append(HumanPlayer(i, goal[i]))
+        elif num_human < i < num_human + num_random:
+            res.append(RandomPlayer(i, goal[i]))
+        else:
+            res.append(SmartPlayer(i, goal[i], smart_players[i - (num_human + num_random)]))
+    return res
 
 
 def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
@@ -69,9 +77,14 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     Preconditions:
         - 0 <= level <= max_depth
     """
-    if block.level == level and block.position == location:
+    # TODO
+    if block.level == level:
         return block
-    return None
+    elif block.level < level and block.children:
+        for child_block in block.children:
+            return _get_block(child_block, location, level)
+    else:
+        return None
 
 
 class Player:
@@ -202,7 +215,7 @@ class RandomPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal) -> None:
-        # TODO: Implement Me
+        Player.__init__(self, player_id, goal)
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
@@ -238,7 +251,7 @@ class SmartPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal, difficulty: int) -> None:
-        # TODO: Implement Me
+        Player.__init__(self, player_id, goal, difficulty)
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:

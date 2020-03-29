@@ -187,8 +187,7 @@ class Block:
         <position> is the (x, y) coordinates of the upper-left corner of this
         Block.
         """
-        # TODO: Implement me
-        return  # FIXME
+        # TODO
 
     def smashable(self) -> bool:
         """Return True iff this block can be smashed.
@@ -230,8 +229,7 @@ class Block:
                     ran_colour_num = random.randint(0, 3)
                     child.colour = COLOUR_LIST[ran_colour_num]
             return True
-        else:
-            return False
+        return False
 
     def swap(self, direction: int) -> bool:
         """Swap the child Blocks of this Block.
@@ -243,8 +241,16 @@ class Block:
 
         Precondition: <direction> is either 0 or 1
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if self.children:
+            if direction == 1:
+                self.children = [self.children[3], self.children[2], self.children[1], self.children[0]]
+                self._update_children_positions(self.position)
+                return True
+            else:
+                self.children = [self.children[1], self.children[0], self.children[3], self.children[2]]
+                self._update_children_positions(self.position)
+                return True
+        return False
 
     def rotate(self, direction: int) -> bool:
         """Rotate this Block and all its descendants.
@@ -256,8 +262,16 @@ class Block:
 
         Precondition: <direction> is either 1 or 3.
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if self.children:
+            if direction == 3:
+                self.children = [self.children[3], self.children[0], self.children[1], self.children[2]]
+                self._update_children_positions(self.position)
+                return True
+            else:
+                self.children = [self.children[1], self.children[2], self.children[3], self.children[0]]
+                self._update_children_positions(self.position)
+                return True
+        return False
 
     def paint(self, colour: Tuple[int, int, int]) -> bool:
         """Change this Block's colour iff it is a leaf at a level of max_depth
@@ -265,8 +279,10 @@ class Block:
 
         Return True iff this Block's colour was changed.
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if len(self.children) == 0 and self.level == self.max_depth and self.colour != colour:
+            self.colour = colour
+            return True
+        return False
 
     def combine(self) -> bool:
         """Turn this Block into a leaf based on the majority colour of its
@@ -281,16 +297,42 @@ class Block:
 
         Return True iff this Block was turned into a leaf node.
         """
-        # TODO: Implement me
-        return True  # FIXME
+        if self.children and self.level == self.max_depth - 1:
+            colours = {}
+            for child_block in self.children:
+                if child_block.colour not in colours:
+                    colours[child_block.colour] = 1
+                colours[child_block.colour] += 1
+            maj_col = None
+            for key, val in colours.items():
+                if val > 2:
+                    maj_col = key
+            if maj_col:
+                self.colour = maj_col
+                self.children = []
+                self.max_depth -= 1
+                return True
+            return False
+        return False
 
     def create_copy(self) -> Block:
         """Return a new Block that is a deep copy of this Block.
 
         Remember that a deep copy has new blocks (not aliases) at every level.
         """
-        # TODO: Implement me
-        pass  # FIXME
+        # TODO
+        pass
+
+    def _get_level_nodes(self, level: int) -> List:
+        """Return a list with all nodes on this <level>.
+
+        This is a helper method for create_copy.
+        """
+        if self.level > level:
+            return []
+        if self.level == level:
+            return [self]
+        return [n for child in self.children for n in child._get_level_nodes(level)]
 
 
 if __name__ == '__main__':
