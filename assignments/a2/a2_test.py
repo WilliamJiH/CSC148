@@ -49,6 +49,7 @@ class A2Test(unittest.TestCase):
     one_level: a block that contain one sub level
     one_internal: a block that whose upper right child contain 4 sub children
     """
+
     def setUp(self) -> None:
         # To set up data just initialize them as you do in any initializer
         # Like self.xxx = xxx

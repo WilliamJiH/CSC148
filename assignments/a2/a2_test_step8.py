@@ -3,7 +3,9 @@ from a2_test import A2Test
 from block import random as player_random
 from player import *
 from goal import *
+
 SEED_NUMBER = 1214
+
 
 class A2TestPlayerTopLevel(A2Test):
     def setUp(self) -> None:
@@ -15,7 +17,7 @@ class A2TestPlayerTopLevel(A2Test):
         super().tearDown()
 
     def do_action(self, block: Block, action: Tuple[str, Optional[int]],
-                   target_color: Tuple[int, int, int]) -> bool:
+                  target_color: Tuple[int, int, int]) -> bool:
         move_successful = False
         direction = action[1]
         if action in [ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE]:
@@ -61,7 +63,7 @@ class A2TestPlayerTopLevel(A2Test):
         rplayer1 = RandomPlayer(0, goal)
         rplayer1._proceed = True
         move = rplayer1.generate_move(broad)
-        self.assertTrue(self.do_action(move[2],(move[0], move[1]), target_color),
+        self.assertTrue(self.do_action(move[2], (move[0], move[1]), target_color),
                         "the move should be successful")
 
     def test_random_player_generate_move_level(self):
@@ -84,8 +86,6 @@ class A2TestPlayerTopLevel(A2Test):
         move = splayer1.generate_move(broad)
         self.assertEqual(move[0], 'pass', "There is no better move on"
                                           " this broad")
-
-
 
 
 if __name__ == "__main__":

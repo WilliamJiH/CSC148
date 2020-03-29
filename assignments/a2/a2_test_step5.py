@@ -718,7 +718,7 @@ class TestPaint(A2Test):
         self.one_level.max_depth = 2
         for child in self.one_level.children:
             child.max_depth = 2
-        res = [child.paint((i, i, i))for i in range(100) for child in self.one_internal.children]
+        res = [child.paint((i, i, i)) for i in range(100) for child in self.one_internal.children]
         self.assertBlock(self.one_level, [(0, 0), 10, None, 0, 2, 4], True, False)
         self.assertBlock(self.one_level.children[0], [(5, 0), 5, (20, 20, 20), 1, 2, 0], True, True)
         self.assertBlock(self.one_level.children[1], [(0, 0), 5, (30, 30, 30), 1, 2, 0], True, True)
@@ -899,7 +899,8 @@ class TestCombine(A2Test):
             is_leaf = block_child == 0
             res = block.combine()
             self.assertFalse(res)
-            self.assertBlock(block, [block_position, block_size, block_colour, block_level, block_depth, block_child], True, is_leaf)
+            self.assertBlock(block, [block_position, block_size, block_colour, block_level, block_depth, block_child],
+                             True, is_leaf)
             for child in block.children:
                 temp.append(child)
 
@@ -941,7 +942,8 @@ class TestCombine(A2Test):
         self.one_internal.children[0].children[0].colour = (60, 60, 60)
         self.one_internal.children[0].children[1].colour = (60, 60, 60)
         res = self.one_internal.children[0].combine()
-        self.assertTrue(res, "You should be able to combine the node in the level of max depth -1 with a majority colour")
+        self.assertTrue(res,
+                        "You should be able to combine the node in the level of max depth -1 with a majority colour")
         self.assertBlock(self.one_internal, [(0, 0), 100, None, 0, 2, 4], True, False)
         self.assertBlock(self.one_internal.children[0], [(50, 0), 50, (60, 60, 60), 1, 2, 0], True, True)
         self.assertBlock(self.one_internal.children[1], [(0, 0), 50, (80, 80, 80), 1, 2, 0], True, True)

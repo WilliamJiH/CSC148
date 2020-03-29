@@ -5,6 +5,7 @@ from blocky import _block_to_squares
 from game import *
 from player import *
 from a2_test import A2Test, block_bfs
+
 SEED_NUMBER = 1214
 
 
@@ -68,9 +69,9 @@ class A2TestStep2(A2Test):
         """
         act1 = _block_to_squares(self.one_internal.children[0])
         exp1 = [((10, 10, 10), (75, 25), 25),
-                               ((20, 20, 20), (50, 25), 25),
-                               ((30, 30, 30), (50, 0), 25),
-                               ((40, 40, 40), (75, 0), 25)]
+                ((20, 20, 20), (50, 25), 25),
+                ((30, 30, 30), (50, 0), 25),
+                ((40, 40, 40), (75, 0), 25)]
         self.assertCountEqual(exp1, act1)
         act2 = _block_to_squares(self.one_internal)
         exp2 = exp1 + [((80, 80, 80), (0, 0), 50),
@@ -177,7 +178,7 @@ class A2TestStep2(A2Test):
                           [[(50, 25), 25, COLOUR_LIST, 2, 2, 0], not check_color, is_leaf],
                           [[(75, 25), 25, COLOUR_LIST, 2, 2, 0], not check_color, is_leaf],
                           [[(25, 0), 25, COLOUR_LIST, 2, 2, 0], not check_color, is_leaf],
-                          [[(0, 0), 25, COLOUR_LIST, 2, 2, 0], not check_color,  is_leaf],
+                          [[(0, 0), 25, COLOUR_LIST, 2, 2, 0], not check_color, is_leaf],
                           [[(0, 25), 25, COLOUR_LIST, 2, 2, 0], not check_color, is_leaf],
                           [[(25, 25), 25, COLOUR_LIST, 2, 2, 0], not check_color, is_leaf],
                           [[(25, 50), 25, COLOUR_LIST, 2, 2, 0], not check_color, is_leaf],
@@ -200,12 +201,14 @@ class A2TestStep2(A2Test):
         squares = _block_to_squares(temp)
         squares.sort(key=lambda x: x[0][0])
         exp_squares = [((50, 50, 50), (75, 0), 25), ((60, 60, 60), (50, 0), 25), ((70, 70, 70), (50, 25), 25),
-         ((80, 80, 80), (75, 25), 25), ((90, 90, 90), (25, 0), 25), ((100, 100, 100), (0, 0), 25),
-         ((110, 110, 110), (0, 25), 25), ((120, 120, 120), (25, 25), 25), ((130, 130, 130), (25, 50), 25),
-         ((140, 140, 140), (0, 50), 25), ((150, 150, 150), (0, 75), 25), ((160, 160, 160), (25, 75), 25),
-         ((170, 170, 170), (75, 50), 25), ((180, 180, 180), (50, 50), 25), ((190, 190, 190), (50, 75), 25),
-         ((200, 200, 200), (75, 75), 25)]
+                       ((80, 80, 80), (75, 25), 25), ((90, 90, 90), (25, 0), 25), ((100, 100, 100), (0, 0), 25),
+                       ((110, 110, 110), (0, 25), 25), ((120, 120, 120), (25, 25), 25), ((130, 130, 130), (25, 50), 25),
+                       ((140, 140, 140), (0, 50), 25), ((150, 150, 150), (0, 75), 25), ((160, 160, 160), (25, 75), 25),
+                       ((170, 170, 170), (75, 50), 25), ((180, 180, 180), (50, 50), 25),
+                       ((190, 190, 190), (50, 75), 25),
+                       ((200, 200, 200), (75, 75), 25)]
         self.assertCountEqual(squares, exp_squares)
+
 
 if __name__ == "__main__":
     unittest.main(exit=False)

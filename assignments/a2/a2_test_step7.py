@@ -36,7 +36,8 @@ class TestBlobGoal(A2TestStep7):
             self.goal_colour = (i, i, i)
             self.goal.colour = self.goal_colour
             res = self.goal.score(self.leaf_block)
-            self.assertEqual(0, res, "You shoud return 0 since the colour of the block is not equal to the colour of the parameter")
+            self.assertEqual(0, res,
+                             "You shoud return 0 since the colour of the block is not equal to the colour of the parameter")
 
     def test_goal_2(self):
         """
@@ -262,7 +263,8 @@ class TestBlobGoal(A2TestStep7):
         self.one_internal.children[3].children[3].colour = (100, 100, 100)
         exp = 2
         res = self.goal.score(self.one_internal)
-        self.assertEqual(exp, res, "Two diagonal connections each counts as one so the longest connected blob is I N which is 2")
+        self.assertEqual(exp, res,
+                         "Two diagonal connections each counts as one so the longest connected blob is I N which is 2")
 
     def test_score_10(self):
         """
@@ -386,6 +388,7 @@ class TestBlobGoal(A2TestStep7):
         exp = 5
         res = self.goal.score(self.one_internal)
         self.assertEqual(exp, res, "The largest connected blob is ADMNP")
+
 
 if __name__ == "__main__":
     unittest.main(exit=False)

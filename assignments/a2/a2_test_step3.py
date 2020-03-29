@@ -40,4 +40,3 @@ class A2TestStep3(A2Test):
 
 if __name__ == "__main__":
     unittest.main(exit=False)
-
