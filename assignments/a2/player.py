@@ -69,8 +69,9 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     Preconditions:
         - 0 <= level <= max_depth
     """
-    # TODO: Implement me
-    return None  # FIXME
+    if block.level == level and block.position == location:
+        return block
+    return None
 
 
 class Player:
@@ -211,7 +212,7 @@ class RandomPlayer(Player):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self._proceed = True
 
-    def generate_move(self, board: Block) ->\
+    def generate_move(self, board: Block) -> \
             Optional[Tuple[str, Optional[int], Block]]:
         """Return a valid, randomly generated move.
 
@@ -247,7 +248,7 @@ class SmartPlayer(Player):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self._proceed = True
 
-    def generate_move(self, board: Block) ->\
+    def generate_move(self, board: Block) -> \
             Optional[Tuple[str, Optional[int], Block]]:
         """Return a valid move by assessing multiple valid moves and choosing
         the move that results in the highest score for this player's goal (i.e.,

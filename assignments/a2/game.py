@@ -119,6 +119,7 @@ def create_sample_game() -> Game:
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-io': ['run_game'],
         'allowed-import-modules': [

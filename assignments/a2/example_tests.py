@@ -171,6 +171,7 @@ class TestRender:
     NOTE: this requires that your blocky._block_to_squares function is working
     correctly.
     """
+
     def test_render_reference_board(self, renderer, board_16x16) -> None:
         """Render the reference board to a file so that you can view it on your
         computer."""
@@ -212,6 +213,7 @@ class TestBlock:
     NOTE: this is a small subset of tests - just because you pass them does NOT
     mean you have a fully working implementation of the Block class.
     """
+
     def test_smash_on_child(self, child_block) -> None:
         """Test that a child block cannot be smashed.
         """
@@ -265,6 +267,7 @@ class TestPlayer:
      NOTE: this is a small subset of tests - just because you pass them does NOT
      mean you have a fully working implementation.
     """
+
     def test_get_block_top_left(self, board_16x16) -> None:
         """Test that the correct block is retrieved from the reference board
         when requesting the top-left corner of the board.
@@ -281,7 +284,7 @@ class TestPlayer:
         assert _get_block(board_16x16, top_right, 0) == board_16x16
         assert _get_block(board_16x16, top_right, 1) == board_16x16.children[0]
         assert _get_block(board_16x16, top_right, 2) == \
-            board_16x16.children[0].children[0]
+               board_16x16.children[0].children[0]
 
 
 class TestGoal:
@@ -290,6 +293,7 @@ class TestGoal:
      NOTE: this is a small subset of tests - just because you pass them does NOT
      mean you have a fully working implementation of the Goal sub-classes.
     """
+
     def test_block_flatten(self, board_16x16, flattened_board_16x16) -> None:
         """Test that flattening the reference board results in the expected list
         of colours.

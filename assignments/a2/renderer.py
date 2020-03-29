@@ -24,8 +24,8 @@ This file contains the class that "renders" the image of our game.
 from typing import Dict, List, Tuple, Optional
 import pygame
 
-from actions import ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE,\
-    SWAP_HORIZONTAL, SWAP_VERTICAL, SMASH, ACTION_KEY, ACTION_LABEL, COMBINE,\
+from actions import ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE, \
+    SWAP_HORIZONTAL, SWAP_VERTICAL, SMASH, ACTION_KEY, ACTION_LABEL, COMBINE, \
     PAINT, PASS
 from settings import BACKGROUND_COLOUR, TEXT_COLOUR, OUTLINE_THICKNESS, \
     OUTLINE_COLOUR, HIGHLIGHT_THICKNESS, HIGHLIGHT_COLOUR, COLOUR_LIST, \
@@ -60,7 +60,7 @@ def _print_to_image(text: str, x: int, y: int, font: pygame.font.Font,
 
 
 def _print_human_instructions(x: int, y: int, text_height: int,
-                              font: pygame.font.Font, image: pygame.Surface)\
+                              font: pygame.font.Font, image: pygame.Surface) \
         -> int:
     # Print a heading
     _print_to_image('Human Controls', x, y, font, image)
@@ -88,7 +88,7 @@ def _print_human_instructions(x: int, y: int, text_height: int,
 
 
 def _print_ai_instructions(x: int, y: int, text_height: int,
-                           font: pygame.font.Font, image: pygame.Surface)\
+                           font: pygame.font.Font, image: pygame.Surface) \
         -> int:
     _print_to_image('Non-Human Controls', x, y, font, image)
 
@@ -103,7 +103,7 @@ def _print_ai_instructions(x: int, y: int, text_height: int,
 
 
 def _print_colours(x: int, y: int, text_height: int,
-                   font: pygame.font.Font, image: pygame.Surface)\
+                   font: pygame.font.Font, image: pygame.Surface) \
         -> int:
     _print_to_image('Colours', x, y, font, image)
 

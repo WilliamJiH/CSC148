@@ -39,8 +39,11 @@ def generate_goals(num_goals: int) -> List[Goal]:
     Precondition:
         - num_goals <= len(COLOUR_LIST)
     """
-    # TODO: Implement Me
-    return [PerimeterGoal(COLOUR_LIST[0])]  # FIXME
+    rand_num = random.randint(1, 2)
+    if rand_num == 1:
+        return [PerimeterGoal(COLOUR_LIST[i]) for i in range(0, num_goals)]
+    else:
+        return [BlobGoal(COLOUR_LIST[i]) for i in range(0, num_goals)]
 
 
 def _flatten(block: Block) -> List[List[Tuple[int, int, int]]]:
@@ -97,8 +100,8 @@ class PerimeterGoal(Goal):
         return 148  # FIXME
 
     def description(self) -> str:
-        # TODO: Implement me
-        return 'DESCRIPTION'  # FIXME
+        return "RGB Colour: ({0},{1},{2}), Text Colour: {3}".format(self.colour[0], self.colour[1],
+                                                                    self.colour[2], colour_name(self.colour))
 
 
 class BlobGoal(Goal):
@@ -130,12 +133,13 @@ class BlobGoal(Goal):
         pass  # FIXME
 
     def description(self) -> str:
-        # TODO: Implement me
-        return 'DESCRIPTION'  # FIXME
+        return "RGB Colour: ({0},{1},{2}), Text Colour: {3}".format(self.colour[0], self.colour[1],
+                                                                    self.colour[2], colour_name(self.colour))
 
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-import-modules': [
             'doctest', 'python_ta', 'random', 'typing', 'block', 'settings',
