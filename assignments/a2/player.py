@@ -78,14 +78,21 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     Preconditions:
         - 0 <= level <= max_depth
     """
-    if block.position == location and block.level == level:
+    if block.position[0] <= location[0] < block.position[0] + block.size and \
+            block.position[1] <= location[1] < block.position[1] + block.size \
+            and block.level == level:
         return block
+    elif location[0] < block.position[0] or location[0] >= block.position[0] + \
+            block.size or location[1] < block.position[1] or location[1] >= \
+            block.position[1] + block.size:
+        return None
     else:
-        for child_block in block.children:
-            if child_block.position == location and child_block.level == level:
-                return child_block
-            else:
-                child_block._get_block(location, level)
+        if block.children:
+            for child in block.children:
+                if _get_block(child, location, level) is not None:
+                    return _get_block(child, location, level)
+        else:
+            return block
     return None
 
 
