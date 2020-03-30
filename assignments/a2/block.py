@@ -188,6 +188,17 @@ class Block:
         Block.
         """
         # TODO
+        self.position = position
+        if self.children:
+            self.children[0].position = (position[0] + self._child_size(),
+                                         position[1])
+            self.children[1].position = (position[0], position[1])
+            self.children[2].position = (position[0], position[1] +
+                                         self._child_size())
+            self.children[3].position = (position[0] + self._child_size(),
+                                         position[1] + self._child_size())
+            for child in self.children:
+                child._update_children_positions(child.position)
 
     def smashable(self) -> bool:
         """Return True iff this block can be smashed.
@@ -244,11 +255,13 @@ class Block:
         # FIXME
         if self.children:
             if direction == 1:
-                self.children = [self.children[3], self.children[2], self.children[1], self.children[0]]
+                self.children = [self.children[3], self.children[2],
+                                 self.children[1], self.children[0]]
                 self._update_children_positions(self.position)
                 return True
             else:
-                self.children = [self.children[1], self.children[0], self.children[3], self.children[2]]
+                self.children = [self.children[1], self.children[0],
+                                 self.children[3], self.children[2]]
                 self._update_children_positions(self.position)
                 return True
         return False
@@ -266,11 +279,17 @@ class Block:
         # FIXME
         if self.children:
             if direction == 3:
-                self.children = [self.children[3], self.children[0], self.children[1], self.children[2]]
+                self.children = [self.children[3], self.children[0],
+                                 self.children[1], self.children[2]]
+                for child in self.children:
+                    child.rotate(direction)
                 self._update_children_positions(self.position)
                 return True
             else:
-                self.children = [self.children[1], self.children[2], self.children[3], self.children[0]]
+                self.children = [self.children[1], self.children[2],
+                                 self.children[3], self.children[0]]
+                for child in self.children:
+                    child.rotate(direction)
                 self._update_children_positions(self.position)
                 return True
         return False
@@ -281,7 +300,9 @@ class Block:
 
         Return True iff this Block's colour was changed.
         """
-        if len(self.children) == 0 and self.level == self.max_depth and self.colour != colour:
+        if len(
+                self.children) == 0 and self.level == self.max_depth \
+                and self.colour != colour:
             self.colour = colour
             return True
         return False
@@ -302,20 +323,29 @@ class Block:
         # FIXME
         if self.children and self.level == self.max_depth - 1:
             colours = {}
-            for child_block in self.children:
-                if child_block.colour not in colours:
-                    colours[child_block.colour] = 1
-                colours[child_block.colour] += 1
+            for child in self.children:
+                if child.colour not in colours:
+                    colours[child.colour] = 1
+                else:
+                    colours[child.colour] += 1
             maj_col = None
-            for key, val in colours.items():
-                if val > 2:
-                    maj_col = key
-            if maj_col:
-                self.colour = maj_col
+            lst_of_2 = []
+            for tup in colours.items():
+                if tup[1] >= 3:
+                    maj_col = tup[0]
+                    break
+                if tup[1] == 2:
+                    lst_of_2.append(tup[0])
+            if len(lst_of_2) == 1:
+                maj_col = lst_of_2[0]
+            if len(lst_of_2) == 2:
+                maj_col = None
+            if maj_col is None:
+                return False
+            else:
                 self.children = []
-                self.max_depth -= 1
+                self.colour = maj_col
                 return True
-            return False
         return False
 
     def create_copy(self) -> Block:
@@ -335,7 +365,8 @@ class Block:
             return []
         if self.level == level:
             return [self]
-        return [n for child in self.children for n in child._get_level_nodes(level)]
+        return [n for child in self.children for n in
+                child._get_level_nodes(level)]
 
 
 if __name__ == '__main__':
