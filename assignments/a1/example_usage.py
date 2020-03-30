@@ -104,8 +104,8 @@ if __name__ == '__main__':
 
     # change the two variables below to test your code with different group
     # sizes and grouper types.
-    group_size = 2
-    grouper_type = grouper.GreedyGrouper
+    group_size = 3
+    grouper_type = grouper.WindowGrouper
 
     grouping = grouper_type(group_size).make_grouping(new_course, new_survey)
     score = new_survey.score_grouping(grouping)

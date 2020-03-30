@@ -46,17 +46,18 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
     objects as the length of <smart_players>. The difficulty levels in
     <smart_players> should be applied to each SmartPlayer object, in order.
     """
-    res = []
-    total_players = num_human + num_random + len(smart_players)
-    goal = generate_goals(total_players)
-    for i in range(0, total_players):
-        if i < num_human:
-            res.append(HumanPlayer(i, goal[i]))
-        elif num_human < i < num_human + num_random:
-            res.append(RandomPlayer(i, goal[i]))
-        else:
-            res.append(SmartPlayer(i, goal[i], smart_players[i - (num_human + num_random)]))
-    return res
+    all_players = []
+    goals = generate_goals(num_human + num_random + len(smart_players))
+    for i in range(num_human):
+        all_players.append(HumanPlayer(i, goals[i]))
+    for i in range(num_human, num_human + num_random):
+        all_players.append(RandomPlayer(i, goals[i]))
+    for i in range(num_human + num_random, num_human + num_random +
+                                           len(smart_players)):
+        all_players.append(SmartPlayer(i, goals[i],
+                                       smart_players[
+                                           i - (num_human + num_random)]))
+    return all_players
 
 
 def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
@@ -77,14 +78,15 @@ def _get_block(block: Block, location: Tuple[int, int], level: int) -> \
     Preconditions:
         - 0 <= level <= max_depth
     """
-    # TODO
-    if block.level == level:
+    if block.position == location and block.level == level:
         return block
-    elif block.level < level and block.children:
-        for child_block in block.children:
-            return _get_block(child_block, location, level)
     else:
-        return None
+        for child_block in block.children:
+            if child_block.position == location and child_block.level == level:
+                return child_block
+            else:
+                child_block._get_block(location, level)
+    return None
 
 
 class Player:
@@ -215,7 +217,7 @@ class RandomPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal) -> None:
-        Player.__init__(self, player_id, goal)
+        # TODO: Implement Me
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
@@ -251,7 +253,7 @@ class SmartPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal, difficulty: int) -> None:
-        Player.__init__(self, player_id, goal, difficulty)
+        # TODO: Implement Me
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
