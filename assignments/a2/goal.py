@@ -85,7 +85,8 @@ def _flatten(block: Block) -> List[List[Tuple[int, int, int]]]:
                 else:
                     res[i][j] = bottom_right[i - half_unit][j - half_unit]
     else:
-        res = [[block.colour for _ in range(full_unit)] for _ in range(full_unit)]
+        res = [[block.colour for _ in range(full_unit)] for _ in
+               range(full_unit)]
     return res
 
 
@@ -135,14 +136,16 @@ class PerimeterGoal(Goal):
         return res
 
     def description(self) -> str:
-        return 'Your Goal is a Perimeter Goal, your score is' + str(self.score)
+        return 'Your Goal is a Perimeter Goal, COLOUR: ' + \
+               colour_name(self.colour)
 
 
 class BlobGoal(Goal):
     def score(self, board: Block) -> int:
         res = 0
         flattened = _flatten(board)
-        lst = [[-1 for _ in range(len(flattened))] for _ in range(len(flattened))]
+        lst = [[-1 for _ in range(len(flattened))] for _ in
+               range(len(flattened))]
         for i in range(len(flattened)):
             for j in range(len(flattened)):
                 res = max(res, self._undiscovered_blob_size((i, j), flattened, lst))
@@ -169,14 +172,38 @@ class BlobGoal(Goal):
         either 0 or 1.
         """
         # TODO: Implement me
-        pass  # FIXME
+        target_colour = self.colour
+        if pos[0] >= len(board) or pos[0] < 0 or pos[1] >= len(board) or \
+                pos[1] < 0:
+            return 0
+        elif board[pos[0]][pos[1]] != target_colour:
+            visited[pos[0]][pos[1]] = 0
+            return 0
+        else:
+            size = 1
+            visited[pos[0]][pos[1]] = 1
+            right_pos = (pos[0] + 1, pos[1])
+            left_pos = (pos[0] - 1, pos[1])
+            up_pos = (pos[0], pos[1] + 1)
+            down_pos = (pos[0], pos[1] - 1)
+            if pos[0] + 1 < len(board) and visited[pos[0] + 1][pos[1]] == -1:
+                size += self._undiscovered_blob_size(right_pos, board, visited)
+            if pos[0] - 1 >= 0 and visited[pos[0] - 1][pos[1]] == -1:
+                size += self._undiscovered_blob_size(left_pos, board, visited)
+            if pos[1] + 1 < len(board) and visited[pos[0]][pos[1] + 1] == -1:
+                size += self._undiscovered_blob_size(up_pos, board, visited)
+            if pos[1] - 1 >= 0 and visited[pos[0]][pos[1] - 1] == -1:
+                size += self._undiscovered_blob_size(down_pos, board, visited)
+
+            return size
 
     def description(self) -> str:
-        return 'Your Goal is a Blob Goal, your score is' + str(self.score)
+        return 'Your Goal is a Blob Goal, COLOUR: ' + colour_name(self.colour)
 
 
 if __name__ == '__main__':
     import python_ta
+
     python_ta.check_all(config={
         'allowed-import-modules': [
             'doctest', 'python_ta', 'random', 'typing', 'block', 'settings',
