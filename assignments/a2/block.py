@@ -187,7 +187,6 @@ class Block:
         <position> is the (x, y) coordinates of the upper-left corner of this
         Block.
         """
-        # TODO
         self.position = position
         if self.children:
             self.children[0].position = (position[0] + self._child_size(),
@@ -252,7 +251,6 @@ class Block:
 
         Precondition: <direction> is either 0 or 1
         """
-        # FIXME
         if self.children:
             if direction == 1:
                 self.children = [self.children[3], self.children[2],
@@ -276,7 +274,6 @@ class Block:
 
         Precondition: <direction> is either 1 or 3.
         """
-        # FIXME
         if self.children:
             if direction == 3:
                 self.children = [self.children[3], self.children[0],
@@ -300,9 +297,7 @@ class Block:
 
         Return True iff this Block's colour was changed.
         """
-        if len(
-                self.children) == 0 and self.level == self.max_depth \
-                and self.colour != colour:
+        if len(self.children) == 0 and self.level == self.max_depth and self.colour != colour:
             self.colour = colour
             return True
         return False
@@ -320,7 +315,6 @@ class Block:
 
         Return True iff this Block was turned into a leaf node.
         """
-        # FIXME
         if self.children and self.level == self.max_depth - 1:
             colours = {}
             for child in self.children:

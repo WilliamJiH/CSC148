@@ -66,8 +66,27 @@ def _flatten(block: Block) -> List[List[Tuple[int, int, int]]]:
 
     L[0][0] represents the unit cell in the upper left corner of the Block.
     """
-    # TODO: Implement me
-    return []  # FIXME
+    full_unit = 2 ** (block.max_depth - block.level)
+    res = [[-1 for _ in range(full_unit)] for _ in range(full_unit)]
+    if block.children:
+        top_left = _flatten(block.children[1])
+        top_right = _flatten(block.children[0])
+        bottom_left = _flatten(block.children[2])
+        bottom_right = _flatten(block.children[3])
+        half_unit = int(math.floor(full_unit / 2))
+        for i in range(full_unit):
+            for j in range(full_unit):
+                if (i < half_unit) and (j < half_unit):
+                    res[i][j] = top_left[i][j]
+                elif (i >= half_unit) and (j < half_unit):
+                    res[i][j] = top_right[i - half_unit][j]
+                elif (i < half_unit) and (j >= half_unit):
+                    res[i][j] = bottom_left[i][j - half_unit]
+                else:
+                    res[i][j] = bottom_right[i - half_unit][j - half_unit]
+    else:
+        res = [[block.colour for _ in range(full_unit)] for _ in range(full_unit)]
+    return res
 
 
 class Goal:
@@ -102,8 +121,18 @@ class Goal:
 
 class PerimeterGoal(Goal):
     def score(self, board: Block) -> int:
-        # TODO: Implement me
-        return 148  # FIXME
+        res = 0
+        flattened = _flatten(board)
+        for i in range(0, len(flattened)):
+            if flattened[0][i] == self.colour:
+                res += 1
+            if flattened[i][0] == self.colour:
+                res += 1
+            if flattened[i][len(flattened) - 1] == self.colour:
+                res += 1
+            if flattened[len(flattened) - 1][i] == self.colour:
+                res += 1
+        return res
 
     def description(self) -> str:
         return 'Your Goal is a Perimeter Goal, your score is' + str(self.score)
@@ -111,8 +140,13 @@ class PerimeterGoal(Goal):
 
 class BlobGoal(Goal):
     def score(self, board: Block) -> int:
-        # TODO: Implement me
-        return 148  # FIXME
+        res = 0
+        flattened = _flatten(board)
+        lst = [[-1 for _ in range(len(flattened))] for _ in range(len(flattened))]
+        for i in range(len(flattened)):
+            for j in range(len(flattened)):
+                res = max(res, self._undiscovered_blob_size((i, j), flattened, lst))
+        return res
 
     def _undiscovered_blob_size(self, pos: Tuple[int, int],
                                 board: List[List[Tuple[int, int, int]]],
