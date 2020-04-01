@@ -189,6 +189,7 @@ class Block:
         """
         self.position = position
         if self.children:
+
             self.children[0].position = (position[0] + self._child_size(),
                                          position[1])
             self.children[1].position = (position[0], position[1])
@@ -347,20 +348,23 @@ class Block:
 
         Remember that a deep copy has new blocks (not aliases) at every level.
         """
-        # TODO
-        pass
+        copy_block = Block(self.position, self.size, self.colour, self.level, self.max_depth)
+        if self.colour is None:
+            for child in self.children:
+                copy_block.children.append(child.create_copy())
+        return copy_block
 
-    def _get_level_nodes(self, level: int) -> List:
-        """Return a list with all nodes on this <level>.
-
-        This is a helper method for create_copy.
-        """
-        if self.level > level:
-            return []
-        if self.level == level:
-            return [self]
-        return [n for child in self.children for n in
-                child._get_level_nodes(level)]
+    # def _get_level_nodes(self, level: int) -> List:
+    #     """Return a list with all nodes on this <level>.
+    #
+    #     This is a helper method for create_copy.
+    #     """
+    #     if self.level > level:
+    #         return []
+    #     if self.level == level:
+    #         return [self]
+    #     return [n for child in self.children for n in
+    #             child._get_level_nodes(level)]
 
 
 if __name__ == '__main__':
