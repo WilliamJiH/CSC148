@@ -29,8 +29,7 @@ import pygame
 from block import Block
 from goal import Goal, generate_goals
 
-from actions import KEY_ACTION, ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE, \
-    SWAP_HORIZONTAL, SWAP_VERTICAL, SMASH, PASS, PAINT, COMBINE
+from actions import KEY_ACTION, PASS
 
 
 def create_players(num_human: int, num_random: int, smart_players: List[int]) \
