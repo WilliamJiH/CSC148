@@ -42,7 +42,7 @@ def generate_goals(num_goals: int) -> List[Goal]:
     result = []
     copy_colour_list = COLOUR_LIST[:]
     goal = random.choice(['Per', 'Blob'])
-    for i in range(num_goals):
+    for _ in range(num_goals):
         ran_col = random.choice(copy_colour_list)
         copy_colour_list.remove(ran_col)
         if goal == 'Per':
@@ -121,7 +121,16 @@ class Goal:
 
 
 class PerimeterGoal(Goal):
+    """A player goal in the game of Blocky, which is a Perimeter Goal.
+
+    This is a child class of Goal.
+
+    Only unit-cell-sized portions on the perimeter count and corner cell count
+    twice.
+    """
     def score(self, board: Block) -> int:
+        """Return the current score of the board given with the perimeter goal.
+        """
         res = 0
         flattened = _flatten(board)
         for i in range(0, len(flattened)):
@@ -136,19 +145,31 @@ class PerimeterGoal(Goal):
         return res
 
     def description(self) -> str:
+        """Return the string representation of the current Perimeter Goal with
+        the target colour.
+        """
         return 'Your Goal is a Perimeter Goal, COLOUR: ' + \
                colour_name(self.colour)
 
 
 class BlobGoal(Goal):
+    """A player goal in the game of Blocky, which is a Blob Goal.
+
+    This is a child class of Goal.
+
+    It will count the largest blob of the current board with the target colour.
+    """
     def score(self, board: Block) -> int:
+        """Return the current score of the board given with the blob goal.
+        """
         res = 0
         flattened = _flatten(board)
         lst = [[-1 for _ in range(len(flattened))] for _ in
                range(len(flattened))]
         for i in range(len(flattened)):
             for j in range(len(flattened)):
-                res = max(res, self._undiscovered_blob_size((i, j), flattened, lst))
+                res = max(res, self._undiscovered_blob_size((i, j), flattened,
+                                                            lst))
         return res
 
     def _undiscovered_blob_size(self, pos: Tuple[int, int],
@@ -171,7 +192,6 @@ class BlobGoal(Goal):
         Update <visited> so that all cells that are visited are marked with
         either 0 or 1.
         """
-        # TODO: Implement me
         target_colour = self.colour
         if pos[0] >= len(board) or pos[0] < 0 or pos[1] >= len(board) or \
                 pos[1] < 0:
@@ -198,6 +218,9 @@ class BlobGoal(Goal):
             return size
 
     def description(self) -> str:
+        """Return the string representation of the current Perimeter Goal with
+        the target colour.
+        """
         return 'Your Goal is a Blob Goal, COLOUR: ' + colour_name(self.colour)
 
 

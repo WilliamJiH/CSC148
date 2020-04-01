@@ -298,7 +298,9 @@ class Block:
 
         Return True iff this Block's colour was changed.
         """
-        if len(self.children) == 0 and self.level == self.max_depth and self.colour != colour:
+        if len(
+                self.children) == 0 and self.level == self.max_depth and \
+                self.colour != colour:
             self.colour = colour
             return True
         return False
@@ -348,23 +350,12 @@ class Block:
 
         Remember that a deep copy has new blocks (not aliases) at every level.
         """
-        copy_block = Block(self.position, self.size, self.colour, self.level, self.max_depth)
+        copy_block = Block(self.position, self.size, self.colour, self.level,
+                           self.max_depth)
         if self.colour is None:
             for child in self.children:
                 copy_block.children.append(child.create_copy())
         return copy_block
-
-    # def _get_level_nodes(self, level: int) -> List:
-    #     """Return a list with all nodes on this <level>.
-    #
-    #     This is a helper method for create_copy.
-    #     """
-    #     if self.level > level:
-    #         return []
-    #     if self.level == level:
-    #         return [self]
-    #     return [n for child in self.children for n in
-    #             child._get_level_nodes(level)]
 
 
 if __name__ == '__main__':

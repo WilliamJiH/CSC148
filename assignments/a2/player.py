@@ -53,7 +53,7 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
     for i in range(num_human, num_human + num_random):
         all_players.append(RandomPlayer(i, goals[i]))
     for i in range(num_human + num_random, num_human + num_random +
-                                           len(smart_players)):
+                   len(smart_players)):
         all_players.append(SmartPlayer(i, goals[i],
                                        smart_players[
                                            i - (num_human + num_random)]))
@@ -216,7 +216,7 @@ class HumanPlayer(Player):
 
 
 def _get_random_block(board: Block) -> Block:
-    """Return a random block for RandomPlayer.
+    """Return a random block for RandomPlayer with the board given.
 
     This is a helper method for generate_move.
     """
@@ -227,6 +227,18 @@ def _get_random_block(board: Block) -> Block:
 
 
 class RandomPlayer(Player):
+    """A random player.
+
+    It will perform a random move every time it is its turn.
+    """
+    # === Private Attributes ===
+    # _level:
+    #     The level of the Block that the user selected most recently.
+    # _desired_action:
+    #     The most recent action that the user is attempting to do.
+    #
+    # == Representation Invariants concerning the private attributes ==
+    #     _level >= 0
     # === Private Attributes ===
     # _proceed:
     #   True when the player should make a move, False when the player should
@@ -262,7 +274,13 @@ class RandomPlayer(Player):
         possible_movement = ['smash', 'swap', 'rotate', 'combine', 'paint']
         flag = False
         while not flag:
-            random_move = random.choice(possible_movement)
+            if possible_movement:
+                random_move = random.choice(possible_movement)
+            else:
+                select_block = _get_random_block(copy_board)
+                possible_movement = ['smash', 'swap', 'rotate', 'combine',
+                                     'paint']
+                continue
             if random_move == 'smash':
                 if select_block.smash():
                     self._proceed = False
@@ -312,10 +330,24 @@ class RandomPlayer(Player):
 
 
 class SmartPlayer(Player):
+    """A smart player.
+
+    It will give a relatively smart move when it is its turn.
+    """
+    # === Private Attributes ===
+    # _level:
+    #     The level of the Block that the user selected most recently.
+    # _desired_action:
+    #     The most recent action that the user is attempting to do.
+    #
+    # == Representation Invariants concerning the private attributes ==
+    #     _level >= 0
     # === Private Attributes ===
     # _proceed:
     #   True when the player should make a move, False when the player should
     #   wait.
+    # _difficulty:
+    #   An integer representing what the difficult level this smart player is.
     _proceed: bool
     _difficulty: int
 
@@ -330,67 +362,6 @@ class SmartPlayer(Player):
     def process_event(self, event: pygame.event.Event) -> None:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             self._proceed = True
-
-    def _possible_move(self, board: Block) -> \
-            Optional[Tuple[Optional[Tuple[str, Optional[int], Block]], int]]:
-
-        copy_board = board.create_copy()
-        select_block = _get_random_block(copy_board)
-        select_swap_direction = random.choice([0, 1])
-        select_rotate_direction = random.choice([1, 3])
-        possible_movement = ['smash', 'swap', 'rotate', 'combine', 'paint']
-        flag = False
-        while not flag:
-            random_move = random.choice(possible_movement)
-            if random_move == 'smash':
-                if select_block.smash():
-                    new_score = self.goal.score(copy_board)
-                    return ('smash', None, _get_block(board,
-                                                      select_block.position,
-                                                      select_block.level)), \
-                           new_score
-                else:
-                    possible_movement.remove('smash')
-                    continue
-            elif random_move == 'swap':
-                if select_block.swap(select_swap_direction):
-                    new_score = self.goal.score(copy_board)
-                    return ('swap', select_swap_direction,
-                            _get_block(board, select_block.position,
-                                       select_block.level)), new_score
-                else:
-                    possible_movement.remove('swap')
-                    continue
-            elif random_move == 'rotate':
-                if select_block.rotate(select_rotate_direction):
-                    new_score = self.goal.score(copy_board)
-                    return ('rotate', select_rotate_direction,
-                            _get_block(board, select_block.position,
-                                       select_block.level)), new_score
-                else:
-                    possible_movement.remove('rotate')
-                    continue
-            elif random_move == 'combine':
-                if select_block.combine():
-                    new_score = self.goal.score(copy_board)
-                    return ('combine', None, _get_block(board,
-                                                        select_block.position,
-                                                        select_block.level)), \
-                           new_score
-                else:
-                    possible_movement.remove('combine')
-                    continue
-            elif random_move == 'paint':
-                if select_block.paint(self.goal.colour):
-                    new_score = self.goal.score(copy_board)
-                    return ('paint', None, _get_block(board,
-                                                      select_block.position,
-                                                      select_block.level)), \
-                           new_score
-                else:
-                    possible_movement.remove('paint')
-                    continue
-        return None
 
     def generate_move(self, board: Block) -> \
             Optional[Tuple[str, Optional[int], Block]]:
@@ -409,78 +380,8 @@ class SmartPlayer(Player):
         all_move = []
         all_score = []
         cur_score = self.goal.score(board)
-        for i in range(self._difficulty):
-            new_copy = board.create_copy()
-            select_block = _get_random_block(new_copy)
-            select_swap_direction = random.choice([0, 1])
-            select_rotate_direction = random.choice([1, 3])
-            possible_movement = ['smash', 'swap', 'rotate', 'combine', 'paint']
-            flag = False
-            while not flag:
-                if possible_movement:
-                    random_move = random.choice(possible_movement)
-                else:
-                    select_block = _get_random_block(new_copy)
-                    possible_movement = ['smash', 'swap', 'rotate', 'combine',
-                                         'paint']
-                    continue
-                if random_move == 'smash':
-                    if select_block.smash():
-                        new_score = self.goal.score(new_copy)
-                        all_score.append(new_score - cur_score)
-                        all_move.append(('smash', None, _get_block(board,
-                                                                   select_block.position,
-                                                                   select_block.level)))
-                        flag = True
-                    else:
-                        possible_movement.remove('smash')
-                        continue
-                if random_move == 'swap':
-                    if select_block.swap(select_swap_direction):
-                        new_score = self.goal.score(new_copy)
-                        all_score.append(new_score - cur_score)
-                        all_move.append(('swap', select_swap_direction,
-                                         _get_block(board,
-                                                    select_block.position,
-                                                    select_block.level)))
-                        flag = True
-                    else:
-                        possible_movement.remove('swap')
-                        continue
-                if random_move == 'rotate':
-                    if select_block.swap(select_rotate_direction):
-                        new_score = self.goal.score(new_copy)
-                        all_score.append(new_score - cur_score)
-                        all_move.append(('rotate', select_rotate_direction,
-                                         _get_block(board,
-                                                    select_block.position,
-                                                    select_block.level)))
-                        flag = True
-                    else:
-                        possible_movement.remove('rotate')
-                        continue
-                if random_move == 'combine':
-                    if select_block.combine():
-                        new_score = self.goal.score(new_copy)
-                        all_score.append(new_score - cur_score)
-                        all_move.append(('combine', None, _get_block(board,
-                                                                     select_block.position,
-                                                                     select_block.level)))
-                        flag = True
-                    else:
-                        possible_movement.remove('combine')
-                        continue
-                if random_move == 'paint':
-                    if select_block.paint(self.goal.colour):
-                        new_score = self.goal.score(new_copy)
-                        all_score.append(new_score - cur_score)
-                        all_move.append(('paint', None, _get_block(board,
-                                                                   select_block.position,
-                                                                   select_block.level)))
-                        flag = True
-                    else:
-                        possible_movement.remove('paint')
-                        continue
+        for _ in range(self._difficulty):
+            self._helper(board, all_move, all_score, cur_score)
         all_negative = True
         for score in all_score:
             if score > 0:
@@ -492,6 +393,83 @@ class SmartPlayer(Player):
         else:
             self._proceed = False
             return PASS[0], PASS[1], board
+
+    def _helper(self, board: Block,
+                all_move: List[Tuple[str, Optional[int], Block]],
+                all_score: List[int], cur_score: int) -> None:
+        """
+        It method takes the board, all_move, all_score and cur_score
+        and mutate all_move and all_score and return nothing.
+
+        A helper method for generate_move
+
+        """
+        new_copy = board.create_copy()
+        select_block = _get_random_block(new_copy)
+        select_swap_direction = random.choice([0, 1])
+        select_rotate_direction = random.choice([1, 3])
+        possible_movement = ['smash', 'swap', 'rotate', 'combine', 'paint']
+        flag = False
+        while not flag:
+            if possible_movement:
+                random_move = random.choice(possible_movement)
+            else:
+                select_block = _get_random_block(new_copy)
+                possible_movement = ['smash', 'swap', 'rotate', 'combine',
+                                     'paint']
+                continue
+            if random_move == 'smash':
+                if select_block.smash():
+                    all_score.append(self.goal.score(new_copy) - cur_score)
+                    all_move.append(('smash', None,
+                                     _get_block(board, select_block.position,
+                                                select_block.level)))
+                    flag = True
+                else:
+                    possible_movement.remove('smash')
+                    continue
+            if random_move == 'swap':
+                if select_block.swap(select_swap_direction):
+                    all_score.append(self.goal.score(new_copy) - cur_score)
+                    all_move.append(('swap', select_swap_direction,
+                                     _get_block(board,
+                                                select_block.position,
+                                                select_block.level)))
+                    flag = True
+                else:
+                    possible_movement.remove('swap')
+                    continue
+            if random_move == 'rotate':
+                if select_block.swap(select_rotate_direction):
+                    all_score.append(self.goal.score(new_copy) - cur_score)
+                    all_move.append(('rotate', select_rotate_direction,
+                                     _get_block(board,
+                                                select_block.position,
+                                                select_block.level)))
+                    flag = True
+                else:
+                    possible_movement.remove('rotate')
+                    continue
+            if random_move == 'combine':
+                if select_block.combine():
+                    all_score.append(self.goal.score(new_copy) - cur_score)
+                    all_move.append(('combine', None,
+                                     _get_block(board, select_block.position,
+                                                select_block.level)))
+                    flag = True
+                else:
+                    possible_movement.remove('combine')
+                    continue
+            if random_move == 'paint':
+                if select_block.paint(self.goal.colour):
+                    all_score.append(self.goal.score(new_copy) - cur_score)
+                    all_move.append(('paint', None,
+                                     _get_block(board, select_block.position,
+                                                select_block.level)))
+                    flag = True
+                else:
+                    possible_movement.remove('paint')
+                    continue
 
 
 if __name__ == '__main__':
