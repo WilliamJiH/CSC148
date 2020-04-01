@@ -69,25 +69,32 @@ def _flatten(block: Block) -> List[List[Tuple[int, int, int]]]:
     full_unit = 2 ** (block.max_depth - block.level)
     res = [[-1 for _ in range(full_unit)] for _ in range(full_unit)]
     if block.children:
-        top_left = _flatten(block.children[1])
-        top_right = _flatten(block.children[0])
-        bottom_left = _flatten(block.children[2])
-        bottom_right = _flatten(block.children[3])
-        half_unit = int(math.floor(full_unit / 2))
-        for i in range(full_unit):
-            for j in range(full_unit):
-                if (i < half_unit) and (j < half_unit):
-                    res[i][j] = top_left[i][j]
-                elif (i >= half_unit) and (j < half_unit):
-                    res[i][j] = top_right[i - half_unit][j]
-                elif (i < half_unit) and (j >= half_unit):
-                    res[i][j] = bottom_left[i][j - half_unit]
-                else:
-                    res[i][j] = bottom_right[i - half_unit][j - half_unit]
+        _helper_flatten(block, full_unit, res)
     else:
         res = [[block.colour for _ in range(full_unit)] for _ in
                range(full_unit)]
     return res
+
+
+def _helper_flatten(block: Block, full_unit: int, res: List[List[int]]) -> None:
+    """ This is a helper function for _flatten. This method mutate the matrix
+    <res> under multiple conditions.
+    """
+    top_left = _flatten(block.children[1])
+    top_right = _flatten(block.children[0])
+    bottom_left = _flatten(block.children[2])
+    bottom_right = _flatten(block.children[3])
+    half_unit = int(math.floor(full_unit / 2))
+    for i in range(full_unit):
+        for j in range(full_unit):
+            if (i < half_unit) and (j < half_unit):
+                res[i][j] = top_left[i][j]
+            elif i >= half_unit > j:
+                res[i][j] = top_right[i - half_unit][j]
+            elif i < half_unit <= j:
+                res[i][j] = bottom_left[i][j - half_unit]
+            else:
+                res[i][j] = bottom_right[i - half_unit][j - half_unit]
 
 
 class Goal:
@@ -128,6 +135,7 @@ class PerimeterGoal(Goal):
     Only unit-cell-sized portions on the perimeter count and corner cell count
     twice.
     """
+
     def score(self, board: Block) -> int:
         """Return the current score of the board given with the perimeter goal.
         """
@@ -159,6 +167,7 @@ class BlobGoal(Goal):
 
     It will count the largest blob of the current board with the target colour.
     """
+
     def score(self, board: Block) -> int:
         """Return the current score of the board given with the blob goal.
         """
