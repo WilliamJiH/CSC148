@@ -51,8 +51,8 @@ def create_players(num_human: int, num_random: int, smart_players: List[int]) \
         all_players.append(HumanPlayer(i, goals[i]))
     for i in range(num_human, num_human + num_random):
         all_players.append(RandomPlayer(i, goals[i]))
-    for i in range(num_human + num_random, num_human + num_random +
-                   len(smart_players)):
+    for i in range(num_human + num_random,
+                   num_human + num_random + len(smart_players)):
         all_players.append(SmartPlayer(i, goals[i],
                                        smart_players[
                                            i - (num_human + num_random)]))
