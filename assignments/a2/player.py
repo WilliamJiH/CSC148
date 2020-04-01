@@ -216,6 +216,15 @@ class HumanPlayer(Player):
             return move
 
 
+def _get_random_block(board: Block) -> Block:
+    """Return a random block for RandomPlayer.
+
+    This is a helper method for generate_move.
+    """
+    return _get_block(board, (random.randint(0, board.size), random.randint(0, board.size)),
+                      random.randint(1, board.max_depth))
+
+
 class RandomPlayer(Player):
     # === Private Attributes ===
     # _proceed:
@@ -224,7 +233,7 @@ class RandomPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal) -> None:
-        # TODO: Implement Me
+        Player.__init__(self, player_id, goal)
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
@@ -245,11 +254,29 @@ class RandomPlayer(Player):
         """
         if not self._proceed:
             return None  # Do not remove
-
-        # TODO: Implement Me
-
-        self._proceed = False  # Must set to False before returning!
-        return None  # FIXME
+        copy_board = board.create_copy()
+        select_block = _get_random_block(copy_board)
+        movement_occurrences = []
+        valid = False
+        while not valid and len(movement_occurrences) != 3:
+            select_movement_type = random.choice(['smash', 'swap', 'rotate'])
+            select_swap_direction = random.choice([0, 1])
+            select_rotate_direction = random.choice([1, 3])
+            if select_movement_type not in movement_occurrences:
+                movement_occurrences.append(select_movement_type)
+            if select_movement_type == 'smash':
+                if select_block.smash():
+                    self._proceed = False
+                    return 'smash', board
+            elif select_movement_type == 'swap':
+                if select_block.swap(select_swap_direction):
+                    self._proceed = False
+                    return 'swap', select_swap_direction, board
+            else:
+                if select_block.rotate(select_rotate_direction):
+                    self._proceed = False
+                    return 'rotate', select_rotate_direction, board
+        return None
 
 
 class SmartPlayer(Player):
@@ -260,7 +287,8 @@ class SmartPlayer(Player):
     _proceed: bool
 
     def __init__(self, player_id: int, goal: Goal, difficulty: int) -> None:
-        # TODO: Implement Me
+        Player.__init__(self, player_id, goal)
+        self._difficulty = difficulty
         self._proceed = False
 
     def get_selected_block(self, board: Block) -> Optional[Block]:
@@ -284,8 +312,6 @@ class SmartPlayer(Player):
         """
         if not self._proceed:
             return None  # Do not remove
-
-        # TODO: Implement Me
 
         self._proceed = False  # Must set to False before returning!
         return None  # FIXME
