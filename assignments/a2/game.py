@@ -118,6 +118,7 @@ def create_sample_game() -> Game:
 
 
 def create_random_game() -> Game:
+    """Run a random game with random type of players."""
     return Game(3, 1, 1, [])
 
 
