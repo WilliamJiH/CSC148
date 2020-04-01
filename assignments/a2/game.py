@@ -117,6 +117,10 @@ def create_sample_game() -> Game:
     return Game(3, 1, 1, [6])
 
 
+def create_random_game() -> Game:
+    return Game(3, 1, 1, [])
+
+
 if __name__ == '__main__':
     import python_ta
 
@@ -136,10 +140,11 @@ if __name__ == '__main__':
     # import random
     # random.seed(1001)
 
-    # game = create_sample_game()
+    game = create_sample_game()
     # game = create_auto_game()
-    game = create_two_player_game()
+    # game = create_two_player_game()
     # game = create_solitaire_game()
+    # game = create_random_game()
 
     # Run the game for 5 turns
     game.run_game(5)

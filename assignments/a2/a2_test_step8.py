@@ -1,10 +1,11 @@
 import unittest
 from a2_test import A2Test
 from block import random as player_random
+import block
 from player import *
 from goal import *
-
 SEED_NUMBER = 1214
+from unittest.mock import patch
 
 
 class A2TestPlayerTopLevel(A2Test):
@@ -17,7 +18,7 @@ class A2TestPlayerTopLevel(A2Test):
         super().tearDown()
 
     def do_action(self, block: Block, action: Tuple[str, Optional[int]],
-                  target_color: Tuple[int, int, int]) -> bool:
+                   target_color: Tuple[int, int, int]) -> bool:
         move_successful = False
         direction = action[1]
         if action in [ROTATE_CLOCKWISE, ROTATE_COUNTER_CLOCKWISE]:
@@ -63,7 +64,7 @@ class A2TestPlayerTopLevel(A2Test):
         rplayer1 = RandomPlayer(0, goal)
         rplayer1._proceed = True
         move = rplayer1.generate_move(broad)
-        self.assertTrue(self.do_action(move[2], (move[0], move[1]), target_color),
+        self.assertTrue(self.do_action(move[2],(move[0], move[1]), target_color),
                         "the move should be successful")
 
     def test_random_player_generate_move_level(self):
@@ -77,15 +78,33 @@ class A2TestPlayerTopLevel(A2Test):
             self.do_action(move[2], (move[0], move[1]), target_color),
             "the move should be successful")
 
-    def test_smart_player_do_pass(self):
-        broad = self.leaf_block
+    @patch("block.Block.paint", return_value = False)
+    def test_smart_player_do_pass(self, mock_paint):
+        """
+        (0, 0, (30， 30， 30))      (5, 0， (20, 20, 20))
+                        ___________________________
+                        |            |             |
+                        |            |             |
+                        |            |             |
+            (0, 5, (40, 40, 40))           (5, 5, (50, 50, 50))
+                        |____________|____________ |
+                        |            |             |
+                        |            |             |
+                        |            |             |
+                        |____________|_____________|
+        We mock paint to return False.  You can pretend that in this case calling paint is an invalid move even though
+        technically it is a valid move.  So that you have 4 valid moves that are rotating and swaping.  But none of them
+        can increase the score so you have to return pass
+        """
+        board = self.one_level
         target_color = (10, 10, 10)
         goal = BlobGoal(target_color)
-        splayer1 = SmartPlayer(0, goal, 3)
-        splayer1._proceed = True
-        move = splayer1.generate_move(broad)
-        self.assertEqual(move[0], 'pass', "There is no better move on"
-                                          " this broad")
+        for i in range(1, 5):
+            splayer1 = SmartPlayer(0, goal, i)
+            splayer1._proceed = True
+            move = splayer1.generate_move(board)
+            self.assertEqual('pass', move[0], "There is no better move on"
+                                              " this broad")
 
 
 if __name__ == "__main__":
