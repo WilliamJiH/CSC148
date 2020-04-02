@@ -269,8 +269,10 @@ class RandomPlayer(Player):
             return None  # Do not remove
         copy_board = board.create_copy()
         select_block = _get_random_block(copy_board)
-        select_swap_direction = random.choice([0, 1])
-        select_rotate_direction = random.choice([1, 3])
+        select_swap_direction = random.choice([SWAP_VERTICAL[1],
+                                               SWAP_HORIZONTAL[1]])
+        select_rotate_direction = random.choice([ROTATE_COUNTER_CLOCKWISE[1],
+                                                 ROTATE_CLOCKWISE[1]])
         possible_movement = ['smash', 'swap', 'rotate', 'combine', 'paint']
         flag = False
         while not flag:
@@ -284,9 +286,9 @@ class RandomPlayer(Player):
             if random_move == 'smash':
                 if select_block.smash():
                     self._proceed = False
-                    return 'smash', None, _get_block(board,
-                                                     select_block.position,
-                                                     select_block.level)
+                    return SMASH[0], None, _get_block(board,
+                                                      select_block.position,
+                                                      select_block.level)
                 else:
                     possible_movement.remove('smash')
                     continue
@@ -311,18 +313,18 @@ class RandomPlayer(Player):
             elif random_move == 'combine':
                 if select_block.combine():
                     self._proceed = False
-                    return 'combine', None, _get_block(board,
-                                                       select_block.position,
-                                                       select_block.level)
+                    return COMBINE[0], None, _get_block(board,
+                                                        select_block.position,
+                                                        select_block.level)
                 else:
                     possible_movement.remove('combine')
                     continue
             elif random_move == 'paint':
                 if select_block.paint(self.goal.colour):
                     self._proceed = False
-                    return 'paint', None, _get_block(board,
-                                                     select_block.position,
-                                                     select_block.level)
+                    return PAINT[0], None, _get_block(board,
+                                                      select_block.position,
+                                                      select_block.level)
                 else:
                     possible_movement.remove('paint')
                     continue
